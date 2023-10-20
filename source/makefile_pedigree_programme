@@ -1,0 +1,43 @@
+cmpl = g++
+vrs = -std=c++17
+
+all: pedigree_programme
+
+pedigree_programme: datefmt.o basic_functions.o node.o dyad.o gap.o general_class_functions.o simpath.o relatedness_calculation.o population_simulation.o simulated_annealing.o main.o
+	$(cmpl) $(vrs) -o pedigree_programme datefmt.o basic_functions.o node.o dyad.o gap.o general_class_functions.o simpath.o relatedness_calculation.o population_simulation.o simulated_annealing.o main.o
+
+datefmt.o: datefmt.cpp
+	$(cmpl) $(vrs) -c datefmt.cpp
+
+basic_functions.o: basic_functions.cpp
+	$(cmpl) $(vrs) -c basic_functions.cpp
+	
+node.o: node.cpp
+	$(cmpl) $(vrs) -c node.cpp
+
+dyad.o: dyad.cpp
+	$(cmpl) $(vrs) -c dyad.cpp
+	
+gap.o: gap.cpp
+	$(cmpl) $(vrs) -c gap.cpp
+
+general_class_functions.o: general_class_functions.cpp
+	$(cmpl) $(vrs) -c general_class_functions.cpp
+
+simpath.o: simpath.cpp
+	$(cmpl) $(vrs) -c simpath.cpp
+	
+relatedness_calculation.o: relatedness_calculation.cpp
+	$(cmpl) $(vrs) -c relatedness_calculation.cpp
+	
+population_simulation.o: population_simulation.cpp
+	$(cmpl) $(vrs) -c population_simulation.cpp
+	
+simulated_annealing.o: simulated_annealing.cpp
+	$(cmpl) $(vrs) -c simulated_annealing.cpp
+	
+main.o: main.cpp
+	$(cmpl) $(vrs) -c main.cpp
+
+clean:
+	rm -f *.o pedigree_programme
