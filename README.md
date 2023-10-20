@@ -3,10 +3,13 @@
 <details>
 <summary>Installation guide</summary>
   
-- download file by clicking on the CODE button and either clone or download (don't forget to unzip) the repository to your local filesystem 
-- open the command line and navigate into the folder _relatednesss_cayo/programme/_
-  - you can check with `ls` if there is a file called _pedigree_programme.cpp_
-- run in the command line `make pedigree_programme`
+- to download the programme either clone the repository or download (and don't forget to unzip) the _source_ folder to your local filesystem
+  - you can clone the repository by clicking on the green CODE button and copy the URL [https://github.com/Hendrikjen/pedigree_programme.git](https://github.com/Hendrikjen/pedigree_programme.git)
+  - open GitBash or a bash terminal (for instance in Visual Studio Code) and navigate to desired folder where you want to locate the cloned repository
+  - clone the repository with the command `git clone https://github.com/Hendrikjen/pedigree_programme.git`
+- after downloading or cloning the source code, open the command line and navigate into the folder _pedigree_programme/source/_
+  - you can check with `ls` if there are multiple Headerfiles (.h) and the respective source code files (.cpp) as well as _main.cpp_ and the makefile _makefile_pedigree_programme_
+- run in the command line `make -f makefile_pedigree_programme`
 - use the command `./pedigree_programme` to start the programme (depending on what you want to do, you have to add further arguments after the command)
 </details>
 
@@ -18,16 +21,16 @@
 <summary>Input requirements</summary>
 </details>
 
+
+## Example
 <details>
-<summary>Example</summary>
+<summary>Input/Output files</summary>
 
 <p align="center">
-  <img src="mini_example_git.png" width="300">
+  <img src="example/mini_example_git.png" width="300">
 </p>
 <details>
 <summary> Input file
-
-[txt](mini_example_git.txt) 
 </summary>
 
 |ID|sex|birthseason|mom|sire|DOB|DOD|nonsire|nondam|
@@ -44,11 +47,11 @@
 |J|m|1923|E|F|01-01-1923|NA|NA|NA|
 |K|m|1928|H|G|01-01-1928|NA|NA|NA|
 |L|f|1929|H|I|01-01-1929|NA|NA|NA|
+
+[example_input_pedigree.txt](example/example_input_pedigree.txt) 
 </details>
 <details>
 <summary> Output file (pedigree): additional pedigree info like generational depth and minimal inbreeding value
-
-[txt](mini_example_git_info.txt)
 </summary>
 
 |ID|sex|BS|mom|sire|DOB|DOD|pot_sire|pot_mom|full_generations|min_f|
@@ -65,11 +68,11 @@
 |J|m|1923|E|F|1-1-1923|0-0-0|NA|NA|2|0.000000000000000|
 |K|m|1928|H|G|1-1-1928|0-0-0|NA|NA|2|0.031250000000000|
 |L|f|1929|H|I|1-1-1929|0-0-0|NA|NA|3|0.031250000000000|
+
+[example_output_pedigree_info.txt](example/example_output_pedigree_info.txt)
 </details>
 <details>
 <summary> Output file (dyadlist): path characteristics
-  
-[txt](mini_example_git_full_dyad_list.txt)
 </summary>
 
 |ID 1|ID 2|dyad|relatedness coefficient|paths|pathline|kinline|LCA|depth|kinlabel|fullhalf|
@@ -140,7 +143,33 @@
 |J|K|J_K|0.062500000000000|J@E@A@D@H@K/@/J@E@A@B@G@K|mffffm/@/mfffmm|mat/@/mixed|A/@/A|2/3/@/2/3|1st-cousins-once-removed/@/1st-cousins-once-removed|half/@/half|
 |J|L|J_L|0.281250000000000|J@E@A@D@H@L/@/J@E@I@L/@/J@F@I@L|mfffff/@/mfmf/@/mmmf|mat/@/mixed/@/pat|A/@/E/@/F|2/3/@/1/2/@/1/2|1st-cousins-once-removed/@/niece-uncle/@/niece-uncle|half/@/full/@/full|
 |K|L|K_L|0.296875000000000|K@H@L/@/K@H@D@A@E@I@L/@/K@G@B@A@D@H@L/@/K@G@B@A@E@I@L|mff/@/mffffmf/@/mmfffff/@/mmfffmf|mat/@/mixed/@/mixed/@/mixed|H/@/A/@/A/@/A|1/1/@/3/3/@/3/3/@/3/3|siblings/@/2nd-cousins/@/2nd-cousins/@/2nd-cousins|half/@/half/@/half/@/half|
+
+  
+[example_output_dyadlist.txt](example/example_output_dyadlist.txt)
 </details>
+</details>
+
+<details>
+<summary>Output explanation (path characteristics)</summary>
+
+To further explain the column in the dyadlist output, we will look on the examplary dyad (E_G) from the pedigree example above. The focal individuals E (circle = female) and G (square = male) are related only by maternal ancestors (kinline = mat), whereby the lowest common ancestor A is one edge apart from E and two from G (depth = 1/2) which codes in combination with the sex for the kinlabel nephew/aunt. Each focal has at least one unknown parent, therefore the min DGD is 1.
+
+|name | explanation | example |
+| ------------- | ------------- | ------------- |
+|path | consecutive list of nodes along the relatedness path (edge directions are left unregarded) | E@A@B@G|
+|lca | lowest common ancestor within path | A |
+|pathline | sequence of sexes (f/m/u) along the path | fffm |
+|kinline | whether the path consists solely of maternal or paternal ancestors; “mixed” if both sexes occur | mat |
+|depth | path length from LCA to each focal | 1/2 |
+|kinlabel | kinclass label based on the table of consanguinity (see below) | nephew-aunt |
+|fullhalf | whether two identical paths exist with different common ancestors, e.g. differentiation between full- and half-siblings | half |
+|min\_DGD | minimal dyadic genealogical depth states the pedigree completeness for the dyad; i.e. the minimal amount of fully resolved generations starting from both focals | 1 |
+
+<p align="center">
+<img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showing_degrees_of_relationship.svg" width="500">
+https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showing_degrees_of_relationship.svg
+</p>
+  
 </details>
 
 ## Implementation
@@ -178,35 +207,6 @@ Based on these recursive functions, the programme computes the relatedness betwe
     - if necessary update best difference/pedigree
 7.  save last pedigree solution in file
 
-</details>
-
-## Output
-<details>
-<summary>Path characteristics</summary>
-  
-<p align="center">
-  <img src="simple_ped_path_characteristics.png" width="200">
-</p>
-
-
-Pedigree example to illustrate path characteristics (squares depict male individuals; circles females). The focal individuals D and G are related only by maternal ancestors (kinline = mat), whereby the lowest common ancestor B is one edge apart from D and two from G (depth = 1/2) which codes for the kinlabel uncle/niece. For each focal, all parents are known but both’ their grandparent generation is incomplete, therefore the min DGD is 2.
-
-|name | explanation | example |
-| ------------- | ------------- | ------------- |
-|path | consecutive list of nodes along the relatedness path (edge directions are left unregarded) | D@B@E@G|
-|lca | lowest common ancestor within path | B |
-|pathline | sequence of sexes (f/m/u) along the path | mfff |
-|kinline | whether the path consists solely of maternal or paternal ancestors; “mixed” if both sexes occur | mat |
-|depth | path length from LCA to each focal | 1/2 |
-|kinlabel | kinclass label based on the table of consanguinity (see below) | uncle-niece |
-|fullhalf | whether two identical paths exist with different common ancestors, e.g. differentiation between full- and half-siblings | half |
-|min\_DGD | minimal dyadic genealogical depth states the pedigree completeness for the dyad; i.e. the minimal amount of fully resolved generations starting from both focals | 2 |
-
-<p align="center">
-<img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showing_degrees_of_relationship.svg" width="500">
-https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showing_degrees_of_relationship.svg
-</p>
-  
 </details>
 
 ## Contribution and citation
