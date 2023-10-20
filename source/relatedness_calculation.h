@@ -26,7 +26,7 @@ string all_nodes_info_file(std::deque <node> *all_nodes_ptr,std::map<string,int>
 void write_dyad_list(std::deque <dyad> *all_dyads_ptr,std::deque<std::deque<double>> &f_mat,int ncol,string filename, string write_dyadlist = "full");
 void set_min_f(std::deque<std::deque<double>> &f_matrix,std::deque<dyad>*all_dyads_ptr,std::deque<node>*all_nodes_ptr);
 void set_all_min_DGD(std::deque<node>*all_nodes_ptr, std::deque<dyad>*all_dyads_ptr);
-void pip_forward(string file,int maturation_age_f,int maturation_age_m,int gestation_length,string write_dyadlist = "full",int generation_limit = -1,bool multithreading = false,int n_cores = std::thread::hardware_concurrency()-1);
+void pip_forward(string file,string output_file,string input_dyadlist,int maturation_age_f,int maturation_age_m,int gestation_length,string write_dyadlist,int generation_limit = -1,int n_cores = 1);
 void reduce_node_space(node* indiv_1,node* indiv_2,std::set<string>*node_space);
 bool indivs_in_node_space(node* indiv_1, node* indiv_2,std::set<string>*node_space_ptr);
 #endif

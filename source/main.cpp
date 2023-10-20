@@ -12,6 +12,7 @@
 #include <filesystem>
 #include <cmath>
 #include <thread>
+#include <getopt.h>
 
 #include "datefmt.h"
 #include "basic_functions.h"
@@ -28,22 +29,128 @@ using namespace std::chrono;
 namespace fs = std::filesystem;
 
 
-int main() {
+int main(int argc, char *argv[]) {
     auto start = high_resolution_clock::now();
     std::chrono::steady_clock::time_point init_main_start = std::chrono::steady_clock::now();
-    string working_directory = fs::current_path().generic_string() + "/";//+"testoutput.txt";
-    // macaque & dataset specifics
+    int option;
+    string functionality, input_pedigree, input_dyadlist,output;
+    string output_extend = "full";
     int gestation_length = 200;
     int maturation_age_f = 1095;
     int maturation_age_m = 1250;
     int generation_limit = -1;
     int max_age = 30;
-    int default_year = 1986; 
-    int simulation_duration = 3;
-    int start_individuals = 5;
-    int n_cores = std::thread::hardware_concurrency()-4;
+    int default_year = 1900; 
+    int simulation_duration = -1;
+    int start_individuals = -1;
+    int cores = 1;
+    double init_temp = 0; 
+    double stop_temp = 1; 
+    double temp_decay = 0.99; 
+
+    while ((option = getopt(argc, argv, "f:ip:id:e:o:g:mf:mm:l:y:s:n:c:ti:ts:td:a:")) != -1) {
+        switch (option) {
+            case 'f':
+                functionality = optarg;
+                break;
+            case 'i':
+                if (optarg && optarg[0] == 'p') {
+                    input_pedigree = optarg + 1; 
+                } else if (optarg && optarg[0] == 'd') {
+                    input_dyadlist = optarg + 1; 
+                }
+                break;
+            case 'e':
+                output_extend = optarg;
+                break;
+            case 'o':
+                output = optarg;
+                break;
+            case 'g':
+                gestation_length = stoi(optarg);
+                break;
+            case 'm':
+                if (optarg && optarg[0] == 'f') {
+                    maturation_age_f = stoi(optarg + 1); 
+                } else if (optarg && optarg[0] == 'm') {
+                    maturation_age_m = stoi(optarg + 1); 
+                }
+                break;
+            case 'l':
+                generation_limit = stoi(optarg);
+                break;
+            case 'y':
+                default_year = stoi(optarg);
+                break;
+            case 's':
+                simulation_duration = stoi(optarg);
+                break;
+            case 'n':
+                start_individuals = stoi(optarg);
+                break;
+            case 'a':
+                max_age = stoi(optarg);
+                break;
+            case 'c':
+                cores = stoi(optarg);
+                break;
+            case 't':
+                if (optarg && optarg[0] == 'i') {
+                    init_temp = stod(optarg + 1); 
+                } else if (optarg && optarg[0] == 's') {
+                    stop_temp = stod(optarg + 1); 
+                }else if (optarg && optarg[0] == 'd') {
+                    temp_decay = stod(optarg + 1); 
+                }
+                break;
+            default:
+                std::cerr << "Invalid argument. Please check the documentation for available options, clarification and the required data types." << endl;
+                return 1;
+        }
+    }
+
+    if(functionality == "relatedness") {
+        if (input_pedigree.empty()) {
+            cerr << "Missing argument for relatedness calculation. Please add '-ip [path to pedigree file.txt]'" << endl;
+            return 1;
+        }else{
+            cout << "start relatedness calculation"<<endl;
+            if(output.empty()){
+                output = str_split(input_pedigree,".txt")[0];
+            }
+            if(input_dyadlist.empty()){
+                input_dyadlist = "";
+            }
+            pip_forward(input_pedigree,output,input_dyadlist,maturation_age_f,maturation_age_m,gestation_length,output_extend,generation_limit,cores);
+        }
+    }else if(functionality == "simulation"){
+        if(simulation_duration < 0 || start_individuals < 0){
+            cerr << "Missing argument for population simulation. Please make sure '-sd [simulation_duration]' and  '-si [number of start individuals]' are called correctly." << endl;
+            return 1;
+        }else{
+            cout << "start population simulation"<<endl;
+        }
+    }else if(functionality == "annealing"){
+        if(input_pedigree.empty() || input_dyadlist.empty()){
+            cerr << "Missing argument for simulated annealing. Please make sure '-ip [input_pedigree]' and  '-id [dyadlist with realized relatedness values]' are called correctly." << endl;
+            return 1;
+        }else{
+            cout << "start simulated annealing"<<endl;
+        }
+    }else{
+        cerr << "Invalid function. Please make sure '-f [relatedness|simulation|annealing]' is called correctly." << endl;
+        return 1;
+    }
+
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>(stop - start);
+    cout << "\n\n####################### finished after ... #######################\n--> "<< duration_cast<microseconds>(stop - start).count()<< " microseconds\n--> "<< duration_cast<milliseconds>(stop - start).count()<< " milliseconds\n--> "<< duration_cast<seconds>(stop - start).count()<< " seconds\n--> "<< duration_cast<minutes>(stop - start).count()<< " minutes\n";
+    return 0;
+}
+
+    //string working_directory = fs::current_path().generic_string() + "/";
+
     // PART ONE: relatedness coefficient calculation based on rhesus macaque pedigree (Cayo Santiago population) >> real pedigree with gaps
-    cout << "main startet"<<endl;
     //pip_forward(working_directory+"pedigree_since_1986_plus_parents",maturation_age_f,maturation_age_m,gestation_length,"full",generation_limit,true,n_cores);
     //pip_forward(working_directory+"pedigree_since_1986_plus_parents_complete_unk",maturation_age_f,maturation_age_m,gestation_length,"full",generation_limit,true,n_cores);
     //pip_forward(working_directory+"mini_example_git",maturation_age_f,maturation_age_m,gestation_length,"full",generation_limit);
@@ -80,11 +187,4 @@ int main() {
     */
 
 
-// TIME MEASUREMENT
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(stop - start);
-    cout << "\n\n####################### finished after ... #######################\n--> "<< duration_cast<microseconds>(stop - start).count()<< " microseconds\n--> "<< duration_cast<milliseconds>(stop - start).count()<< " milliseconds\n--> "<< duration_cast<seconds>(stop - start).count()<< " seconds\n--> "<< duration_cast<minutes>(stop - start).count()<< " minutes\n";
-    //cout << "\nPress Enter to exit\n";
-    //getc(stdin);
-    return 0;
-}
+

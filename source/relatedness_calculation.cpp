@@ -280,7 +280,7 @@ void set_all_min_DGD(std::deque<node>*all_nodes_ptr, std::deque<dyad>*all_dyads_
     }
     
 }
-void pip_forward(string file,int maturation_age_f,int maturation_age_m,int gestation_length,string write_dyadlist,int generation_limit,bool multithreading,int n_cores){ // pipeline or forward simulation -> calculates r and path characteristics for given dyads in a given, imperfect pedigree (pipeline for masterthesis part one)
+void pip_forward(string file,string output_file,string input_dyadlist,int maturation_age_f,int maturation_age_m,int gestation_length,string write_dyadlist,int generation_limit,int n_cores){ // pipeline or forward simulation -> calculates r and path characteristics for given dyads in a given, imperfect pedigree (pipeline for masterthesis part one)
     // INIT BASIC OBJECTS 
     string sex,name,mom,sire,DOB,DOD,nonsires,nondams;
     int birthseason;
@@ -296,7 +296,7 @@ void pip_forward(string file,int maturation_age_f,int maturation_age_m,int gesta
     all_node_names.push_back(imaginary_female.get_name());
     all_node_names.push_back(imaginary_male.get_name());
     // load MASTER data (pedigree) and transfer information into node objects
-    ifstream data(file+".txt");
+    ifstream data(file);
     if (! data) {
         cout << "unable to open "<<file<<" for reading" << endl;
     }
@@ -324,10 +324,10 @@ void pip_forward(string file,int maturation_age_f,int maturation_age_m,int gesta
     add_missing_parent_in_dyad_list(&all_nodes,all_node_names_str,&mom_node_names,&sire_node_names);
     
     // load dyad list with dyads of interest or if file is not available -> create all possible dyads including all_nodes
-    ifstream data_dyadlist(file+"_dyadlist_selection.txt"); 
+    ifstream data_dyadlist(input_dyadlist); 
     std::deque <dyad> all_dyads;
     map<string, int> dyad_dict;
-    if (! data_dyadlist) {
+    if (! data_dyadlist or input_dyadlist == "") {
         cout << "\n-----> WARNING. unable to find dyad list selection file for reading. dyad list will be generated for all dyad combinations. WARNING <-----\n" << endl;
         int index = 0;
         for(int i = 0;i<all_nodes.size();i++){
@@ -381,7 +381,7 @@ void pip_forward(string file,int maturation_age_f,int maturation_age_m,int gesta
         all_dyads[i].set_idx(&all_nodes);
     }
     
-    if(multithreading == true){
+    if(n_cores > 1){
         std::vector<std::thread> threads = {};
         for(int i = 0;i<n_cores;i++){ 
             int dyads_start = (int) (i*floor(all_dyads.size()/n_cores));
@@ -390,7 +390,7 @@ void pip_forward(string file,int maturation_age_f,int maturation_age_m,int gesta
                 dyads_end = all_dyads.size();
             }
             cout << "fill_f_matrix thread "<<i<<" from dyad "<<dyads_start<<" to "<<dyads_end<<endl;
-            thread th1(fill_f_matrix,&f_mat,ncol,nrow,&all_nodes,&all_dyads,&dyad_dict,generation_limit,multithreading,dyads_start,dyads_end,i+1);
+            thread th1(fill_f_matrix,&f_mat,ncol,nrow,&all_nodes,&all_dyads,&dyad_dict,generation_limit,true,dyads_start,dyads_end,i+1);
             threads.push_back(std::move(th1));
         }
         for(int i = 0;i<threads.size();i++){
@@ -398,7 +398,7 @@ void pip_forward(string file,int maturation_age_f,int maturation_age_m,int gesta
             //cout << "join thread "<<i<<endl;
         }
     }else{
-        fill_f_matrix(&f_mat,ncol,nrow,&all_nodes,&all_dyads,&dyad_dict,generation_limit,multithreading);
+        fill_f_matrix(&f_mat,ncol,nrow,&all_nodes,&all_dyads,&dyad_dict,generation_limit,false);
     }
     
     set_parent_pool(&all_nodes,maturation_age_m,maturation_age_f,gestation_length);
