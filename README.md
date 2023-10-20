@@ -15,14 +15,101 @@
 
 <details>
 <summary>Command line arguments</summary>
-</details>
 
-<details>
-<summary>Input requirements</summary>
+`-f <functionality>` [string]
+  - **options**: 
+    - _relatedness_: calculates the dyadic relatedness (+ path characteristics) from a given pedigree
+    - _simulation_: simulates a pedigree
+    - _annealing_: starts a simulated annealing algorithm to fill the parental gaps within a pedigree based on realized relatedness values
+  - **default**: [empty] (the programme starts without task)
+<details><summary>
+functionality == relatedness</summary>
+
+#### required arguments
+- `-ip <input_pedigree>` [string]: path to pedigree file, e.g. _pedigree.txt_
+
+#### optional arguments
+- `-e <output_extend>` [string]
+  - **options**:
+    - _full_: returns the full dyadlist output, including path characteristics
+    - _reduced_: returns only dyadlist with dyadic relatedness coefficients
+  - **default**: full
+- `-id <input_dyadlist>` [string]
+  - **options**: path to file with selected dyads e.g. _dyad_selection.txt_
+  - **default**: [empty] (all dyads within the pedigree will be analysed)
+- `-o <output>` [string]
+  - **options**: custom output name e.g. if output == _programme_output_, the resulting output files will be named "programme_output_dyadlist.txt" and "programme_output_pedigree_info.txt"
+  - **default**: [empty] (the input file name will be used as prefix)
+- `-l <generation_limit>` [int]
+  - **options**: restricts the distance to potential lowest common ancestors, e.g. if generation_limit == _3_, only paths up to the grandparent generation will be returned, great-grand-parents will be considered as unrelated
+  - **default**: [empty] (no limitation; all ancestors of a focal will be considered as potential lowest common ancestor)
+- `-c <cores>` [int]
+  - **options**: number of used cores for processes for which multiprocessing is possible
+  - **default**: 1 (no multiprocessing)
+
+#### Example
+`./pedigree_programme -f relatedness -ip pedigree.txt -e reduced -c 5`
+
+</details>
+<details><summary>
+functionality == simulation</summary>
+
+#### required arguments
+- `-s <simulation_duration>` [int]: number of years to restrict the duration of the simulation
+- `-n <start_individual>` [int]: number of individuals at the start of the simulation
+
+#### optional arguments
+- `-y <default_year>` [int]
+  - **options**: year in which simulation will start
+  - **default**: 1900
+- `-g <gestation_length>` [int]
+  - **options**: gestation length in days
+  - **default**: 200
+- `-a <max_age>` [int]
+  - **options**: age maximum in population (
+  - **default**: 200
+- `-mf <maturation_age_f>` [int]
+  - **options**: maturation age of females in days
+  - **default**: 1095
+- `-mm <maturation_age_m>` [int]
+  - **options**: maturation age of males in days
+  - **default**: 1250
+</details>
+<details><summary>
+functionality == annealing</summary>
+
+#### required arguments
+- `-ip <input_pedigree>` [string]: path to pedigree file (with gaps), e.g. _pedigree.txt_
+- `-id <input_dyads_complete>` [string]: path to dyadlist with realized relatedness values, e.g. _true_dyads.txt_
+
+#### optional arguments
+- `-ti <init_temp>` [double]
+  - **options**: start temperature 
+  - **default**: [empty] (automatically calculated)
+- `-ts <stop_temp>` [double]
+  - **options**: stop temperature, if current temperature falls below stop temperature, the algorithm terminates
+  - **default**: 1.0
+- `-td <temp_decay>` [double]
+  - **options**: the temperature multiplication factor to determine the number of iterations (if the number of iteration _n_ is set, the decay factor can be calculated with temp_decay = $\sqrt[n]{\frac{t_{stop}}{t_{init}}} $
+  - **default**: 0.99
+- `-g <gestation_length>` [int]
+  - **options**: gestation length in days
+  - **default**: 200
+- `-mf <maturation_age_f>` [int]
+  - **options**: maturation age of females in days
+  - **default**: 1095
+- `-mm <maturation_age_m>` [int]
+  - **options**: maturation age of males in days
+  - **default**: 1250
+</details>
 </details>
 
 
 ## Example
+<details>
+<summary>Input requirements</summary>
+</details>
+
 <details>
 <summary>Input/Output files</summary>
 
