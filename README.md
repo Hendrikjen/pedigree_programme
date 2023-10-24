@@ -49,8 +49,8 @@ functionality == relatedness</summary>
   - **default**: [empty] (the input file name will be used as prefix)
 - `-r <reduce_node_space>` [bool]
   - **options**: 
-    - _true_:
-    - _false_: 
+    - _true_: before calculating the dyadic relatedness, the number of individuals will be reduced which means that only descendants of the focal's common ancestors will be considered in the analysis (it effectively reduces the search space without affecting the result, but might be only beneficial in almost completely reconstructed pedigrees with a long history due to the extra computational cost)
+    - _false_: no prior narrowing of the search space
   - **default**: false
 
 #### Example
@@ -252,7 +252,7 @@ https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showi
 ## Implementation
 <details>
 <summary>Relatedness Coefficient</summary>
-
+### Abridgement from the [master thesis]()
 The genealogy G is delineated as a directed, acyclic graph with two distinct classes of vertices, $V_1$ (males) and $V_2$ (females), with each node referring to an unique individual.
 Edges are defined as unidirectional parent/offspring relationships which means that each child has one edge coming from its mother, and one coming from its father. To ensure that each individual has a maternal and paternal edge, the graph comprises of two additionally, imaginary nodes $\rho_1\ \epsilon\ V_1$ and $\rho_2\ \epsilon\ V_2$ which are the compensatory substitute in case of an unknown dam or sire.
 Imaginary individuals were considered as unrelated to each other as well as unrelated to any other individual $x\ \epsilon\ V: f\left(\rho_1,\rho_2\right)=f\left(x,\rho_1\right)=f\left(x,\rho_2\right)=0$, while the relatedness of an individual $x\ \epsilon\ V$ to itself is set as $f\left(x,x\right)=1$. Otherwise, the relatedness coefficient $f\left(x,y\right)$ of a dyad, consisting of the two vertices $x,\ y\ \epsilon\ V$, is given by the recursive formula 
