@@ -129,11 +129,7 @@ int main(int argc, char *argv[]) {
             if(input_dyadlist.empty()){
                 input_dyadlist = "";
             }
-            try{
-                pip_forward(input_pedigree,output,input_dyadlist,maturation_age_f,maturation_age_m,gestation_length,output_extend,generation_limit,cores,reduce_node_space);
-            }catch(const exception& e){
-                cerr << "Error while calculation dyadic relatedness\n"<<e.what()<<endl;
-            }
+            pip_forward(input_pedigree,output,input_dyadlist,maturation_age_f,maturation_age_m,gestation_length,output_extend,generation_limit,cores,reduce_node_space);
         }
     }else if(functionality == "simulation"){
         if(simulation_duration < 0 || start_individuals < 0){
