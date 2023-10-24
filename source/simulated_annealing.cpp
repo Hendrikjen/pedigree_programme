@@ -66,7 +66,6 @@ double load_data_for_sim_annealing(string file_full,string file_gaps, std::deque
         cout << "try to load both dyad_lists and concatenate..."<<endl;
         if(fs::exists(file_gaps+"_dyad_list.txt") == false){
             cout << "dyad_list file does not exist. calculate."<<endl;
-            //pip_forward(input_pedigree,output,input_dyadlist,maturation_age_f,maturation_age_m,gestation_length,output_extend,generation_limit,cores);
             pip_forward(file_gaps,file_gaps,"",maturation_age_f,maturation_age_m,gestation_length,"full");
         }
         ifstream data_dyads(file_gaps+ "_dyad_list.txt");// load dyad information which belongs to pedigree with gaps -> gap r values // please ensure a complete dyad_list with all dyads of interest (from WGS)

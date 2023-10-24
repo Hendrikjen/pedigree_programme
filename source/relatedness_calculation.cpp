@@ -1,6 +1,6 @@
 #include "relatedness_calculation.h"
 
-double calculate_f_xy(node * indiv_1,node * indiv_2,std::deque<std::deque<double>> *f_matrix,int ncol,int nrow,std::deque <node> * all_nodes_ptr,std::deque <dyad> * all_dyads_ptr,int dyad_index,std::deque <int> * path_indices_ptr,int path_index,map <string,int> * dyad_dict_ptr,int current_generation_1,int current_generation_2,int generation_limit, std::set<string>* node_space_ptr){ // calculates dyadic relatedness coeffiecients recursively and collects path characteristics  
+double calculate_f_xy(node * indiv_1,node * indiv_2,std::deque<std::deque<double>> *f_matrix,int ncol,int nrow,std::deque <node> * all_nodes_ptr,std::deque <dyad> * all_dyads_ptr,int dyad_index,std::deque <int> * path_indices_ptr,int path_index,map <string,int> * dyad_dict_ptr, std::set<string>* node_space_ptr){ // calculates dyadic relatedness coeffiecients recursively and collects path characteristics  
     int i = (*indiv_1).get_matidx();
     int j = (*indiv_2).get_matidx();
     if(i<j){
@@ -64,28 +64,28 @@ double calculate_f_xy(node * indiv_1,node * indiv_2,std::deque<std::deque<double
                 int commit_index = path_indices_ptr->back()+1;
                 double xp = 0;
                 if((*indiv_1).get_mom()==(*indiv_2).get_name()){  // offspring|mom 
-                    xp = calculate_f_xy((*indiv_1).sire_node,indiv_2,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,commit_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit, node_space_ptr);
+                    xp = calculate_f_xy((*indiv_1).sire_node,indiv_2,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,commit_index,dyad_dict_ptr, node_space_ptr);
                     if(xp!=0){ 
                         for(int k = commit_index;k<=path_indices_ptr->back();k++){
                             paths_ptr->at(path_indices_ptr->at(k)).push_front(indiv_1);
                         }
                     }
                 }else if((*indiv_1).get_sire()==(*indiv_2).get_name()){  // offspring|sire
-                    xp = calculate_f_xy((*indiv_1).mom_node,indiv_2,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,commit_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit,node_space_ptr);
+                    xp = calculate_f_xy((*indiv_1).mom_node,indiv_2,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,commit_index,dyad_dict_ptr,node_space_ptr);
                     if(xp!=0){ 
                         for(int k = commit_index;k<=path_indices_ptr->back();k++){
                             paths_ptr->at(path_indices_ptr->at(k)).push_front(indiv_1);
                         }
                     }
                 }else if((*indiv_1).get_name()==(*indiv_2).get_mom()){  // mom|offspring
-                    xp = calculate_f_xy(indiv_1,(*indiv_2).sire_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,commit_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit,node_space_ptr);
+                    xp = calculate_f_xy(indiv_1,(*indiv_2).sire_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,commit_index,dyad_dict_ptr,node_space_ptr);
                     if(xp!=0){
                         for(int k = commit_index;k<=path_indices_ptr->back();k++){
                             paths_ptr->at(path_indices_ptr->at(k)).push_back(indiv_2);
                         }
                     }
                 }else if((*indiv_1).get_name()==(*indiv_2).get_sire()){ // sire|offspring
-                    xp = calculate_f_xy(indiv_1,(*indiv_2).mom_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,commit_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit,node_space_ptr);
+                    xp = calculate_f_xy(indiv_1,(*indiv_2).mom_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,commit_index,dyad_dict_ptr,node_space_ptr);
                     if(xp!=0){ 
                         for(int k = commit_index;k<=path_indices_ptr->back();k++){
                             paths_ptr->at(path_indices_ptr->at(k)).push_back(indiv_2);
@@ -101,11 +101,11 @@ double calculate_f_xy(node * indiv_1,node * indiv_2,std::deque<std::deque<double
                 if(path_index>path_indices_ptr->back()){ // if new path is needed -> add new path & new path_index
                     path_indices_ptr->push_back(all_dyads_ptr->at(dyad_index).add_new_path());
                 }
-                double xs = calculate_f_xy(indiv_1,(*indiv_2).sire_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit,node_space_ptr);
+                double xs = calculate_f_xy(indiv_1,(*indiv_2).sire_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,node_space_ptr);
                 if(xs!=0){
                     next_path_index = path_indices_ptr->back()+1;
                 }
-                double xm = calculate_f_xy(indiv_1,(*indiv_2).mom_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit,node_space_ptr);
+                double xm = calculate_f_xy(indiv_1,(*indiv_2).mom_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,node_space_ptr);
                 f_xy = 0.5*(xs + xm);
                 for(int k = path_index;k<=path_indices_ptr->back();k++){
                     paths_ptr->at(path_indices_ptr->at(k)).push_back(indiv_2);
@@ -114,30 +114,30 @@ double calculate_f_xy(node * indiv_1,node * indiv_2,std::deque<std::deque<double
                 if(path_index>path_indices_ptr->back()){
                     path_indices_ptr->push_back(all_dyads_ptr->at(dyad_index).add_new_path());
                 }
-                double sx = calculate_f_xy((*indiv_1).sire_node,indiv_2,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit,node_space_ptr);
+                double sx = calculate_f_xy((*indiv_1).sire_node,indiv_2,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,node_space_ptr);
                 if(sx!=0){
                     next_path_index = path_indices_ptr->back()+1;
                 }   
-                double mx = calculate_f_xy((*indiv_1).mom_node,indiv_2,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit,node_space_ptr);
+                double mx = calculate_f_xy((*indiv_1).mom_node,indiv_2,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,node_space_ptr);
                 f_xy = 0.5*(sx+mx);
                 for(int k = path_index;k<=path_indices_ptr->back();k++){
                     paths_ptr->at(path_indices_ptr->at(k)).push_front(indiv_1);
                 }
             }else{ // indiv 1 and indiv 2 are not (in)direct ancestors of each other, but might be related otherwise -> check
                 double mm, ms, sm, ss;
-                mm = calculate_f_xy((*indiv_1).mom_node,(*indiv_2).mom_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit,node_space_ptr);
+                mm = calculate_f_xy((*indiv_1).mom_node,(*indiv_2).mom_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,node_space_ptr);
                 if(mm!=0){
                     next_path_index = path_indices_ptr->back()+1; // needs to be raised in case another path parts from here
                 }
-                ms = calculate_f_xy((*indiv_1).mom_node,(*indiv_2).sire_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit,node_space_ptr);
+                ms = calculate_f_xy((*indiv_1).mom_node,(*indiv_2).sire_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,node_space_ptr);
                 if(ms!=0){
                     next_path_index = path_indices_ptr->back()+1;
                 }
-                sm = calculate_f_xy((*indiv_1).sire_node,(*indiv_2).mom_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit,node_space_ptr);
+                sm = calculate_f_xy((*indiv_1).sire_node,(*indiv_2).mom_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,node_space_ptr);
                 if(sm!=0){
                     next_path_index = path_indices_ptr->back()+1;
                 }
-                ss = calculate_f_xy((*indiv_1).sire_node,(*indiv_2).sire_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit,node_space_ptr);
+                ss = calculate_f_xy((*indiv_1).sire_node,(*indiv_2).sire_node,f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,dyad_index,path_indices_ptr,next_path_index,dyad_dict_ptr,node_space_ptr);
                 f_xy=0.25*(mm+ms+sm+ss);
                 if(f_xy!=0){  
                     for(int k=path_index;k<=path_indices_ptr->back();k++){ // push indiv_1 and indiv_2 to all previously created paths (embracing) 
@@ -153,7 +153,7 @@ double calculate_f_xy(node * indiv_1,node * indiv_2,std::deque<std::deque<double
     }
     return f_xy;
 }
-void fill_f_matrix(std::deque<std::deque<double>> *f_matrix,int ncol, int nrow,std::deque <node> *all_nodes_ptr,std::deque <dyad> *all_dyads_ptr,map<string,int>*dyad_dict_ptr,int generation_limit,bool multithreading, int dyads_start,int dyads_end,int thread){ // help function to start r calculation (recursive f_xy)
+void fill_f_matrix(std::deque<std::deque<double>> *f_matrix,int ncol, int nrow,std::deque <node> *all_nodes_ptr,std::deque <dyad> *all_dyads_ptr,map<string,int>*dyad_dict_ptr,bool reduce_node_space_tf,bool multithreading, int dyads_start,int dyads_end,int thread){ // help function to start r calculation (recursive f_xy)
     if(multithreading == false){
         dyads_start = 0;
         dyads_end = all_dyads_ptr->size();
@@ -161,13 +161,12 @@ void fill_f_matrix(std::deque<std::deque<double>> *f_matrix,int ncol, int nrow,s
         cout << "WARNING. unable to fill f matrix by multiple threads (dyads_end == 0)"<<endl;
     }
     for(int i = dyads_start;i<dyads_end;i++){
-        if((i-dyads_start-1)%((dyads_end-dyads_start)/10)==0){
-            string printer = "["+ to_string(thread)+"] "+to_string(ceil(((i-dyads_start)*100)/(dyads_end-dyads_start)))+"% \t("+ to_string(i) +" of "+to_string(dyads_start)+".."+to_string(dyads_end)+")";
+        int progress = static_cast<int>((static_cast<double>(i-dyads_start)/(dyads_end-dyads_start))*100);
+        if (progress % 10 == 0) {
+            string printer = "["+ to_string(thread)+"] "+to_string(progress)+"% \t("+ to_string(i) +" of "+to_string(dyads_start)+".."+to_string(dyads_end)+")";
             cout <<printer<<endl;
-            //cout <<"["<< thread<<"] "<<ceil(((i-dyads_start)*100)/(dyads_end-dyads_start))<<"% \t("<< i <<" of "<<dyads_start<<".."<<dyads_end<<")"<<endl;
         }
         auto [x,y] = all_dyads_ptr->at(i).get_dyad_idx_in_f_matrix();// getting index for matrix cell --> [x][y]
-        //cout << "["<<x<<"]"<<"["<<y<<"] "<<all_dyads_ptr->at(i).get_dyad_name();
         if(all_dyads_ptr->at(i).get_indiv_1_name()!=all_nodes_ptr->at(0).get_name() // check that dyad definitely consists of non-imaginary nodes (real individuals)
                 &&all_dyads_ptr->at(i).get_indiv_2_name()!=all_nodes_ptr->at(0).get_name()
                 &&all_dyads_ptr->at(i).get_indiv_1_name()!=all_nodes_ptr->at(1).get_name()
@@ -176,7 +175,13 @@ void fill_f_matrix(std::deque<std::deque<double>> *f_matrix,int ncol, int nrow,s
             int path_index = all_dyads_ptr->at(i).add_new_path();
             std::deque <int> path_indices = {path_index}; // at the start -> index is 0 (only one new (empty) path was generated as default)
             std::set<string> node_space;
-            //reduce_node_space(&all_nodes_ptr->at(x),&all_nodes_ptr->at(y),&node_space);
+            if (reduce_node_space_tf){
+                reduce_node_space(&all_nodes_ptr->at(x),&all_nodes_ptr->at(y),&node_space);
+            }
+            if(reduce_node_space_tf && node_space.size()==0){
+                f_matrix->at(x)[y]=0;
+            }else{
+            //
             //if(node_space.size()==0){ 
             //    f_matrix[x][y]=0;
             //}else{
@@ -184,9 +189,9 @@ void fill_f_matrix(std::deque<std::deque<double>> *f_matrix,int ncol, int nrow,s
                 node_space.insert(all_dyads_ptr->at(i).get_indiv_2_name());
                 int current_generation_1 = 1;
                 int current_generation_2 = 1;
-                double f_xy = calculate_f_xy(&all_nodes_ptr->at(all_dyads_ptr->at(i).get_indiv_1_idx()),&all_nodes_ptr->at(all_dyads_ptr->at(i).get_indiv_2_idx()),f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,i,&path_indices,path_index,dyad_dict_ptr,current_generation_1,current_generation_2,generation_limit,&node_space);
+                double f_xy = calculate_f_xy(&all_nodes_ptr->at(all_dyads_ptr->at(i).get_indiv_1_idx()),&all_nodes_ptr->at(all_dyads_ptr->at(i).get_indiv_2_idx()),f_matrix,ncol,nrow,all_nodes_ptr,all_dyads_ptr,i,&path_indices,path_index,dyad_dict_ptr,&node_space);
                 f_matrix->at(x)[y]=f_xy;
-            //}
+            }
         }
     }
     //cout << "\n";
@@ -280,7 +285,7 @@ void set_all_min_DGD(std::deque<node>*all_nodes_ptr, std::deque<dyad>*all_dyads_
     }
     
 }
-void pip_forward(string file,string output_file,string input_dyadlist,int maturation_age_f,int maturation_age_m,int gestation_length,string write_dyadlist,int generation_limit,int n_cores){ // pipeline or forward simulation -> calculates r and path characteristics for given dyads in a given, imperfect pedigree (pipeline for masterthesis part one)
+void pip_forward(string file,string output_file,string input_dyadlist,int maturation_age_f,int maturation_age_m,int gestation_length,string write_dyadlist,int generation_limit,int n_cores,bool reduce_node_space_tf){ // pipeline or forward simulation -> calculates r and path characteristics for given dyads in a given, imperfect pedigree (pipeline for masterthesis part one)
     // INIT BASIC OBJECTS 
     string sex,name,mom,sire,DOB,DOD,nonsires,nondams;
     int birthseason;
@@ -295,10 +300,13 @@ void pip_forward(string file,string output_file,string input_dyadlist,int matura
     std::deque <string> sire_node_names;
     all_node_names.push_back(imaginary_female.get_name());
     all_node_names.push_back(imaginary_male.get_name());
-    // load MASTER data (pedigree) and transfer information into node objects
+
+    // load pedigree data and transfer information into node objects
     ifstream data(file);
     if (! data) {
         cout << "unable to open "<<file<<" for reading" << endl;
+    }else{
+        cout << "load pedigree data ("<<file<<")"<<endl;
     }
     int matidx = 2;
     while(data >> name >> sex >> birthseason >> mom >> sire >> DOB >> DOD >> nonsires >> nondams){
@@ -328,7 +336,7 @@ void pip_forward(string file,string output_file,string input_dyadlist,int matura
     std::deque <dyad> all_dyads;
     map<string, int> dyad_dict;
     if (! data_dyadlist or input_dyadlist == "") {
-        cout << "\n-----> WARNING. unable to find dyad list selection file for reading. dyad list will be generated for all dyad combinations. WARNING <-----\n" << endl;
+        cout << "Unable to find dyad selection file for reading. Dyad list will be generated for all dyad combinations." << endl;
         int index = 0;
         for(int i = 0;i<all_nodes.size();i++){
             for(int j = i+1;j<all_nodes.size();j++){
@@ -341,6 +349,7 @@ void pip_forward(string file,string output_file,string input_dyadlist,int matura
             }
         }
     }else{
+        cout << "load dyad data ("<<input_dyadlist<<")"<<endl;
         string indiv_1,indiv_2;
         int index = 0;
         while(data_dyadlist>>indiv_1>>indiv_2){
@@ -354,20 +363,13 @@ void pip_forward(string file,string output_file,string input_dyadlist,int matura
         data_dyadlist.close();
     }
     // START MAIN PIPELINE
+    cout << "create parent pointer"<<endl;
     for(int i = 0;i<all_nodes.size();i++){
         all_nodes[i].create_parent_ptr(&all_nodes);
     }
+    cout << "create relatedness matrix"<<endl;
     int nrow=all_nodes.size();
     int ncol=all_nodes.size();
-    
-    
-    // fill F-MATRIX
-    /* n=5      uf      um      A       B       C
-        uf  0
-        um  0       0
-        A   0       0       1
-        B   0       0       -1     1
-        C   0       0       -1     -1     1 */
     std::deque<std::deque<double>> f_mat = {};
     for(int i = 0;i<ncol;i++){
         f_mat.push_back(std::deque<double>(i+1, -1.0f));
@@ -389,8 +391,8 @@ void pip_forward(string file,string output_file,string input_dyadlist,int matura
             if(i==(n_cores-1)){
                 dyads_end = all_dyads.size();
             }
-            cout << "fill_f_matrix thread "<<i<<" from dyad "<<dyads_start<<" to "<<dyads_end<<endl;
-            thread th1(fill_f_matrix,&f_mat,ncol,nrow,&all_nodes,&all_dyads,&dyad_dict,generation_limit,true,dyads_start,dyads_end,i+1);
+            cout << "calculate dyadic relatedness: thread "<<i<<" from dyad "<<dyads_start<<" to "<<dyads_end<<endl;
+            thread th1(fill_f_matrix,&f_mat,ncol,nrow,&all_nodes,&all_dyads,&dyad_dict,reduce_node_space_tf,true,dyads_start,dyads_end,i+1);
             threads.push_back(std::move(th1));
         }
         for(int i = 0;i<threads.size();i++){
@@ -398,18 +400,15 @@ void pip_forward(string file,string output_file,string input_dyadlist,int matura
             //cout << "join thread "<<i<<endl;
         }
     }else{
-        fill_f_matrix(&f_mat,ncol,nrow,&all_nodes,&all_dyads,&dyad_dict,generation_limit,false);
+        cout << "calculate dyadic relatedness"<<endl;
+        fill_f_matrix(&f_mat,ncol,nrow,&all_nodes,&all_dyads,&dyad_dict,reduce_node_space_tf,false);
     }
-    
+    cout<<"set info attributes (parent pool, min_DGD, min_f)"<<endl;
     set_parent_pool(&all_nodes,maturation_age_m,maturation_age_f,gestation_length);
     set_all_min_DGD(&all_nodes,&all_dyads);
     set_min_f(f_mat,&all_dyads,&all_nodes);
-    // Save/show output
-    //auto [x,y] = all_dyads[190].get_dyad_idx_in_f_matrix();
-    //cout << all_dyads[190].get_dyad_infos();
-    //cout << "f_xy: "<< f_mat[x][y];
-    write_dyad_list(&all_dyads,f_mat,ncol,file,write_dyadlist);
-    all_nodes_info_file(&all_nodes,&dyad_dict,&all_dyads,file+"_info");// potential parent information as new column in masterfile   
+    write_dyad_list(&all_dyads,f_mat,ncol,output_file,write_dyadlist);
+    all_nodes_info_file(&all_nodes,&dyad_dict,&all_dyads,output_file+"_info");// potential parent information as new column in masterfile   
 }
 void reduce_node_space(node* indiv_1,node* indiv_2,std::set<string>*node_space){
     std::deque<node*> ancestor_1;

@@ -47,18 +47,18 @@ int main(int argc, char *argv[]) {
     double init_temp = 0; 
     double stop_temp = 1; 
     double temp_decay = 0.99; 
+    bool reduce_node_space = false;
 
-    while ((option = getopt(argc, argv, "f:ip:id:e:o:g:mf:mm:l:y:s:n:c:ti:ts:td:a:")) != -1) {
+    while ((option = getopt(argc, argv, "a:c:d:e:f:g:i:l:m:n:o:p:r:s:t:w:x:y:z:")) != -1) {
         switch (option) {
             case 'f':
                 functionality = optarg;
                 break;
-            case 'i':
-                if (optarg && optarg[0] == 'p') {
-                    input_pedigree = optarg + 1; 
-                } else if (optarg && optarg[0] == 'd') {
-                    input_dyadlist = optarg + 1; 
-                }
+            case 'p':
+                input_pedigree = optarg;
+                break;
+            case 'd':
+                input_dyadlist = optarg;
                 break;
             case 'e':
                 output_extend = optarg;
@@ -70,11 +70,10 @@ int main(int argc, char *argv[]) {
                 gestation_length = stoi(optarg);
                 break;
             case 'm':
-                if (optarg && optarg[0] == 'f') {
-                    maturation_age_f = stoi(optarg + 1); 
-                } else if (optarg && optarg[0] == 'm') {
-                    maturation_age_m = stoi(optarg + 1); 
-                }
+                maturation_age_m = stoi(optarg); 
+                break;
+            case 'w':
+                maturation_age_f = stoi(optarg); 
                 break;
             case 'l':
                 generation_limit = stoi(optarg);
@@ -94,13 +93,22 @@ int main(int argc, char *argv[]) {
             case 'c':
                 cores = stoi(optarg);
                 break;
+            case 'i':
+                init_temp = stod(optarg); 
+                break;
             case 't':
-                if (optarg && optarg[0] == 'i') {
-                    init_temp = stod(optarg + 1); 
-                } else if (optarg && optarg[0] == 's') {
-                    stop_temp = stod(optarg + 1); 
-                }else if (optarg && optarg[0] == 'd') {
-                    temp_decay = stod(optarg + 1); 
+                stop_temp = stod(optarg); 
+                break;
+            case 'x':
+                temp_decay = stod(optarg);
+                break;
+            case 'r':
+                if(optarg == "true"){
+                    reduce_node_space = true;
+                }else if(optarg == "false"){
+                    reduce_node_space = false;
+                }else{
+                    cerr << "Invalid reduce_node_space argument. Please choose 'true' or 'false' (default = false)"<<endl;
                 }
                 break;
             default:
@@ -111,7 +119,7 @@ int main(int argc, char *argv[]) {
 
     if(functionality == "relatedness") {
         if (input_pedigree.empty()) {
-            cerr << "Missing argument for relatedness calculation. Please add '-ip [path to pedigree file.txt]'" << endl;
+            cerr << "Missing argument for relatedness calculation. Please add '-p [path to pedigree file.txt]'" << endl;
             return 1;
         }else{
             cout << "start relatedness calculation"<<endl;
@@ -121,24 +129,28 @@ int main(int argc, char *argv[]) {
             if(input_dyadlist.empty()){
                 input_dyadlist = "";
             }
-            pip_forward(input_pedigree,output,input_dyadlist,maturation_age_f,maturation_age_m,gestation_length,output_extend,generation_limit,cores);
+            try{
+                pip_forward(input_pedigree,output,input_dyadlist,maturation_age_f,maturation_age_m,gestation_length,output_extend,generation_limit,cores,reduce_node_space);
+            }catch(const exception& e){
+                cerr << "Error while calculation dyadic relatedness\n"<<e.what()<<endl;
+            }
         }
     }else if(functionality == "simulation"){
         if(simulation_duration < 0 || start_individuals < 0){
-            cerr << "Missing argument for population simulation. Please make sure '-sd [simulation_duration]' and  '-si [number of start individuals]' are called correctly." << endl;
+            cerr << "Missing argument for population simulation. Please make sure '-s [simulation_duration]' and  '-n [number of start individuals]' are called correctly." << endl;
             return 1;
         }else{
             cout << "start population simulation"<<endl;
         }
     }else if(functionality == "annealing"){
         if(input_pedigree.empty() || input_dyadlist.empty()){
-            cerr << "Missing argument for simulated annealing. Please make sure '-ip [input_pedigree]' and  '-id [dyadlist with realized relatedness values]' are called correctly." << endl;
+            cerr << "Missing argument for simulated annealing. Please make sure '-p [input_pedigree]' and  '-d [dyadlist with realized relatedness values]' are called correctly." << endl;
             return 1;
         }else{
             cout << "start simulated annealing"<<endl;
         }
     }else{
-        cerr << "Invalid function. Please make sure '-f [relatedness|simulation|annealing]' is called correctly." << endl;
+        cerr << "No assigned task. Please make sure '-f [relatedness|simulation|annealing]' is called correctly." << endl;
         return 1;
     }
 
