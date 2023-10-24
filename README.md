@@ -22,92 +22,124 @@
     - _simulation_: simulates a pedigree
     - _annealing_: starts a simulated annealing algorithm to fill the parental gaps within a pedigree based on realized relatedness values
   - **default**: [empty] (the programme starts without task)
+
 <details><summary>
 functionality == relatedness</summary>
 
 #### required arguments
-- `-ip <input_pedigree>` [string]: path to pedigree file, e.g. _pedigree.txt_
+- `-p <input_pedigree>` [string]: path to pedigree file, e.g. _pedigree.txt_
 
 #### optional arguments
+- `-c <cores>` [int]
+  - **options**: number of cores for multiprocessing
+  - **default**: 1 (no multiprocessing)
+- `-d <input_dyadlist>` [string]
+  - **options**: path to file with selected dyads e.g. _dyad_selection.txt_
+  - **default**: [empty] (all dyads within the pedigree will be analysed)
 - `-e <output_extend>` [string]
   - **options**:
     - _full_: returns the full dyadlist output, including path characteristics
     - _reduced_: returns only dyadlist with dyadic relatedness coefficients
   - **default**: full
-- `-id <input_dyadlist>` [string]
-  - **options**: path to file with selected dyads e.g. _dyad_selection.txt_
-  - **default**: [empty] (all dyads within the pedigree will be analysed)
-- `-o <output>` [string]
-  - **options**: custom output name e.g. if output == _programme_output_, the resulting output files will be named "programme_output_dyadlist.txt" and "programme_output_pedigree_info.txt"
-  - **default**: [empty] (the input file name will be used as prefix)
 - `-l <generation_limit>` [int]
   - **options**: restricts the distance to potential lowest common ancestors, e.g. if generation_limit == _3_, only paths up to the grandparent generation will be returned, great-grand-parents will be considered as unrelated
   - **default**: [empty] (no limitation; all ancestors of a focal will be considered as potential lowest common ancestor)
-- `-c <cores>` [int]
-  - **options**: number of used cores for processes for which multiprocessing is possible
-  - **default**: 1 (no multiprocessing)
+- `-o <output>` [string]
+  - **options**: custom output name (prefix) e.g. if output == _programme_output_, the resulting output files will be named "programme_output_dyadlist.txt" and "programme_output_info.txt"
+  - **default**: [empty] (the input file name will be used as prefix)
+- `-r <reduce_node_space>` [bool]
+  - **options**: 
+    - _true_:
+    - _false_: 
+  - **default**: false
 
 #### Example
-`./pedigree_programme -f relatedness -ip pedigree.txt -e reduced -c 5`
+`./pedigree_programme -f relatedness -p pedigree.txt -e reduced -c 5`
 
 </details>
 <details><summary>
 functionality == simulation</summary>
 
 #### required arguments
-- `-s <simulation_duration>` [int]: number of years to restrict the duration of the simulation
 - `-n <start_individual>` [int]: number of individuals at the start of the simulation
+- `-s <simulation_duration>` [int]: number of years to restrict the duration of the simulation
 
 #### optional arguments
-- `-y <default_year>` [int]
-  - **options**: year in which simulation will start
-  - **default**: 1900
-- `-g <gestation_length>` [int]
-  - **options**: gestation length in days
-  - **default**: 200
 - `-a <max_age>` [int]
-  - **options**: age maximum in population (
+  - **options**: age maximum in population (individuals who reach the maximum age will decease in the following year)
   - **default**: 200
-- `-mf <maturation_age_f>` [int]
-  - **options**: maturation age of females in days
-  - **default**: 1095
-- `-mm <maturation_age_m>` [int]
-  - **options**: maturation age of males in days
-  - **default**: 1250
+- `-y <default_year>` [int]
+  - **options**: start year for population simulation
+  - **default**: 1900
+
+#### Example
+`./pedigree_programme -f simulation -n 20 -s 10 -y 1938`
 </details>
 <details><summary>
 functionality == annealing</summary>
 
 #### required arguments
-- `-ip <input_pedigree>` [string]: path to pedigree file (with gaps), e.g. _pedigree.txt_
-- `-id <input_dyads_complete>` [string]: path to dyadlist with realized relatedness values, e.g. _true_dyads.txt_
+- `-d <input_dyads_complete>` [string]: path to dyadlist with realized relatedness values, e.g. _true_dyads.txt_
+- `-p <input_pedigree>` [string]: path to pedigree file (with gaps), e.g. _pedigree.txt_
 
 #### optional arguments
-- `-ti <init_temp>` [double]
+- `-i <init_temp>` [double]
   - **options**: start temperature 
   - **default**: [empty] (automatically calculated)
-- `-ts <stop_temp>` [double]
+- `-t <stop_temp>` [double]
   - **options**: stop temperature, if current temperature falls below stop temperature, the algorithm terminates
   - **default**: 1.0
-- `-td <temp_decay>` [double]
+- `-x <temp_decay>` [double]
   - **options**: the temperature multiplication factor to determine the number of iterations (if the number of iteration _n_ is set, the decay factor can be calculated with temp_decay = $\sqrt[n]{\frac{t_{stop}}{t_{init}}} $
   - **default**: 0.99
+
+#### Example
+`./pedigree_programme -f annealing -p pedigree_with_gaps.txt -d realized_dyadic_relatedness.txt -x 0.995 -c 5 -m 1000 -w 1000`
+</details>
+
+#### general optional arguments
 - `-g <gestation_length>` [int]
   - **options**: gestation length in days
   - **default**: 200
-- `-mf <maturation_age_f>` [int]
-  - **options**: maturation age of females in days
-  - **default**: 1095
-- `-mm <maturation_age_m>` [int]
+- `-m <maturation_age_m>` [int]
   - **options**: maturation age of males in days
   - **default**: 1250
-</details>
+- `-w <maturation_age_f>` [int]
+  - **options**: maturation age of females in days
+  - **default**: 1095
+
 </details>
 
 
 ## Example
 <details>
 <summary>Input requirements</summary>
+
+#### Pedigree
+- Input file format: .txt (tab-separated)
+- no header
+- empty NA values (like "") lead to adverse behaviour or programme abort
+- columns (order and format is mandatory): ID, sex, birthseason/year, mom_ID, sire_ID, day of birth (DOB), day of death (DOD), nonsire, nondam
+
+|column|data type|missing value|comment|
+|-|-|-|-|
+|ID |string| ID names like _UNK_, _NA_, _unknown_, _unkn_f_, and _unkn_m_ have to be avoided|ID names have to be unique and have to be unambiguously assignable to parent IDs; every parent ID from mom_ID or sire_ID has to be listed in the pedigree separately
+|sex |char| u| usage of the following options only _f_ = female, _m_ = male, or _u_ = unknown sex
+|birthseason |int|0| year
+|mom_ID |string|unknown| have to be relatable to exactly one ID, respectively one female individual in the pedigree
+|sire_ID |string|unknown| have to be relatable to exactly one ID, respectively one male individual in the pedigree
+|DOB |string| NA| in the format: 01-01-1900
+|DOD |string|NA| in the format: 01-01-1900
+|nonsire |string| NA|IDs of previously excluded sires strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential sire within the pedigree
+|nondam |string| NA|IDs of previously excluded moms strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential mother within the pedigree
+
+#### Dyad Selection
+- Input file format: .txt (tab-separated) 
+- no header
+- empty NA values (like "") lead to adverse behaviour or programme abort
+- columns (order and format is mandatory): ID_1, ID_2
+  - ID names have to be unique and have to be unambiguously assignable to pedigree IDs; every focal ID has to be listed in the pedigree separately; ID names like _UNK_, _NA_, _unknown_, _unkn_f_, and _unkn_m_ have to be avoided
+- [example](example/example_input_dyad_selection.txt)
 </details>
 
 <details>
@@ -117,7 +149,7 @@ functionality == annealing</summary>
   <img src="example/mini_example_git.png" width="300">
 </p>
 <details>
-<summary> Input file
+<summary> Input file (pedigree)
 </summary>
 
 |ID|sex|birthseason|mom|sire|DOB|DOD|nonsire|nondam|
@@ -137,6 +169,24 @@ functionality == annealing</summary>
 
 [example_input_pedigree.txt](example/example_input_pedigree.txt) 
 </details>
+
+<details>
+<summary> Input file (dyad selection)
+</summary>
+
+|ID_1|ID_2|
+| ------------- | ------------- |
+|C|F|
+|H|L|
+|I|J|
+|K|L|
+|C|G|
+|D|G|
+|D|J|
+
+[example_input_dyad_selection.txt](example/example_input_dyad_selection.txt) 
+</details>
+
 <details>
 <summary> Output file (pedigree): additional pedigree info like generational depth and minimal inbreeding value
 </summary>
@@ -162,76 +212,16 @@ functionality == annealing</summary>
 <summary> Output file (dyadlist): path characteristics
 </summary>
 
-|ID 1|ID 2|dyad|relatedness coefficient|paths|pathline|kinline|LCA|depth|kinlabel|fullhalf|
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-|A|B|A_B|0.500000000000000|A@B|ff|mat|A|0/1|daughter-mother|half|
-|A|C|A_C|0|NA|NA|NA|NA|NA|nonkin|NA|
-|A|D|A_D|0.500000000000000|A@D|ff|mat|A|0/1|daughter-mother|half|
-|A|E|A_E|0.500000000000000|A@E|ff|mat|A|0/1|daughter-mother|half|
-|A|F|A_F|0|NA|NA|NA|NA|NA|nonkin|NA|
-|A|G|A_G|0.250000000000000|A@B@G|ffm|mat|A|0/2|grand-son-grand-mother|half|
-|A|H|A_H|0.250000000000000|A@D@H|fff|mat|A|0/2|grand-daughter-grand-mother|half|
-|A|I|A_I|0.250000000000000|A@E@I|ffm|mat|A|0/2|grand-son-grand-mother|half|
-|A|J|A_J|0.250000000000000|A@E@J|ffm|mat|A|0/2|grand-son-grand-mother|half|
-|A|K|A_K|0.250000000000000|A@B@G@K/@/A@D@H@K|ffmm/@/fffm|mixed/@/mat|A/@/A|0/3/@/0/3|great-grand-son-great-grand-mother/@/great-grand-son-great-grand-mother|half/@/half|
-|A|L|A_L|0.250000000000000|A@E@I@L/@/A@D@H@L|ffmf/@/ffff|mixed/@/mat|A/@/A|0/3/@/0/3|great-grand-daughter-great-grand-mother/@/great-grand-daughter-great-grand-mother|half/@/half|
-|B|C|B_C|0|NA|NA|NA|NA|NA|nonkin|NA|
-|B|D|B_D|0.250000000000000|B@A@D|fff|mat|A|1/1|sisters|half|
-|B|E|B_E|0.250000000000000|B@A@E|fff|mat|A|1/1|sisters|half|
-|B|F|B_F|0|NA|NA|NA|NA|NA|nonkin|NA|
-|B|G|B_G|0.500000000000000|B@G|fm|mat|B|0/1|son-mother|half|
-|B|H|B_H|0.125000000000000|B@A@D@H|ffff|mat|A|1/2|niece-aunt|half|
-|B|I|B_I|0.125000000000000|B@A@E@I|fffm|mat|A|1/2|nephew-aunt|half|
-|B|J|B_J|0.125000000000000|B@A@E@J|fffm|mat|A|1/2|nephew-aunt|half|
-|B|K|B_K|0.312500000000000|B@G@K/@/B@A@D@H@K|fmm/@/ffffm|mixed/@/mat|B/@/A|0/2/@/1/3|grand-son-grand-mother/@/grandnephew-grandaunt|half/@/half|
-|B|L|B_L|0.125000000000000|B@A@D@H@L/@/B@A@E@I@L|fffff/@/fffmf|mat/@/mixed|A/@/A|1/3/@/1/3|grandniece-grandaunt/@/grandniece-grandaunt|half/@/half|
-|C|D|C_D|0|NA|NA|NA|NA|NA|nonkin|NA|
-|C|E|C_E|0|NA|NA|NA|NA|NA|nonkin|NA|
-|C|F|C_F|0|NA|NA|NA|NA|NA|nonkin|NA|
-|C|G|C_G|0|NA|NA|NA|NA|NA|nonkin|NA|
-|C|H|C_H|0.500000000000000|C@H|mf|pat|C|0/1|daughter-father|half|
-|C|I|C_I|0|NA|NA|NA|NA|NA|nonkin|NA|
-|C|J|C_J|0|NA|NA|NA|NA|NA|nonkin|NA|
-|C|K|C_K|0.250000000000000|C@H@K|mfm|mixed|C|0/2|grand-son-grand-father|half|
-|C|L|C_L|0.250000000000000|C@H@L|mff|mixed|C|0/2|grand-daughter-grand-father|half|
-|D|E|D_E|0.250000000000000|D@A@E|fff|mat|A|1/1|sisters|half|
-|D|F|D_F|0|NA|NA|NA|NA|NA|nonkin|NA|
-|D|G|D_G|0.125000000000000|D@A@B@G|fffm|mat|A|1/2|nephew-aunt|half|
-|D|H|D_H|0.500000000000000|D@H|ff|mat|D|0/1|daughter-mother|half|
-|D|I|D_I|0.125000000000000|D@A@E@I|fffm|mat|A|1/2|nephew-aunt|half|
-|D|J|D_J|0.125000000000000|D@A@E@J|fffm|mat|A|1/2|nephew-aunt|half|
-|D|K|D_K|0.312500000000000|D@A@B@G@K/@/D@H@K|fffmm/@/ffm|mixed/@/mat|A/@/D|1/3/@/0/2|grandnephew-grandaunt/@/grand-son-grand-mother|half/@/half|
-|D|L|D_L|0.312500000000000|D@A@E@I@L/@/D@H@L|fffmf/@/fff|mixed/@/mat|A/@/D|1/3/@/0/2|grandniece-grandaunt/@/grand-daughter-grand-mother|half/@/half|
-|E|F|E_F|0|NA|NA|NA|NA|NA|nonkin|NA|
-|E|G|E_G|0.125000000000000|E@A@B@G|fffm|mat|A|1/2|nephew-aunt|half|
-|E|H|E_H|0.125000000000000|E@A@D@H|ffff|mat|A|1/2|niece-aunt|half|
-|E|I|E_I|0.500000000000000|E@I|fm|mat|E|0/1|son-mother|half|
-|E|J|E_J|0.500000000000000|E@J|fm|mat|E|0/1|son-mother|half|
-|E|K|E_K|0.125000000000000|E@A@D@H@K/@/E@A@B@G@K|ffffm/@/fffmm|mat/@/mixed|A/@/A|1/3/@/1/3|grandnephew-grandaunt/@/grandnephew-grandaunt|half/@/half|
-|E|L|E_L|0.312500000000000|E@I@L/@/E@A@D@H@L|fmf/@/fffff|mixed/@/mat|E/@/A|0/2/@/1/3|grand-daughter-grand-mother/@/grandniece-grandaunt|half/@/half|
-|F|G|F_G|0|NA|NA|NA|NA|NA|nonkin|NA|
-|F|H|F_H|0|NA|NA|NA|NA|NA|nonkin|NA|
-|F|I|F_I|0.500000000000000|F@I|mm|pat|F|0/1|son-father|half|
-|F|J|F_J|0.500000000000000|F@J|mm|pat|F|0/1|son-father|half|
-|F|K|F_K|0|NA|NA|NA|NA|NA|nonkin|NA|
-|F|L|F_L|0.250000000000000|F@I@L|mmf|pat|F|0/2|grand-daughter-grand-father|half|
-|G|H|G_H|0.062500000000000|G@B@A@D@H|mffff|mat|A|2/2|1st-cousins|half|
-|G|I|G_I|0.062500000000000|G@B@A@E@I|mfffm|mat|A|2/2|1st-cousins|half|
-|G|J|G_J|0.062500000000000|G@B@A@E@J|mfffm|mat|A|2/2|1st-cousins|half|
-|G|K|G_K|0.531250000000000|G@K/@/G@B@A@D@H@K|mm/@/mffffm|pat/@/mat|G/@/A|0/1/@/2/3|son-father/@/1st-cousins-once-removed|half/@/half|
-|G|L|G_L|0.062500000000000|G@B@A@D@H@L/@/G@B@A@E@I@L|mfffff/@/mfffmf|mat/@/mixed|A/@/A|2/3/@/2/3|1st-cousins-once-removed/@/1st-cousins-once-removed|half/@/half|
-|H|I|H_I|0.062500000000000|H@D@A@E@I|ffffm|mat|A|2/2|1st-cousins|half|
-|H|J|H_J|0.062500000000000|H@D@A@E@J|ffffm|mat|A|2/2|1st-cousins|half|
-|H|K|H_K|0.531250000000000|H@K/@/H@D@A@B@G@K|fm/@/ffffmm|mat/@/mixed|H/@/A|0/1/@/2/3|son-mother/@/1st-cousins-once-removed|half/@/half|
-|H|L|H_L|0.531250000000000|H@L/@/H@D@A@E@I@L|ff/@/ffffmf|mat/@/mixed|H/@/A|0/1/@/2/3|daughter-mother/@/1st-cousins-once-removed|half/@/half|
-|I|J|I_J|0.500000000000000|I@E@J/@/I@F@J|mfm/@/mmm|mat/@/pat|E/@/F|1/1/@/1/1|brothers/@/brothers|full/@/full|
-|I|K|I_K|0.062500000000000|I@E@A@D@H@K/@/I@E@A@B@G@K|mffffm/@/mfffmm|mat/@/mixed|A/@/A|2/3/@/2/3|1st-cousins-once-removed/@/1st-cousins-once-removed|half/@/half|
-|I|L|I_L|0.531250000000000|I@L/@/I@E@A@D@H@L|mf/@/mfffff|pat/@/mat|I/@/A|0/1/@/2/3|daughter-father/@/1st-cousins-once-removed|half/@/half|
-|J|K|J_K|0.062500000000000|J@E@A@D@H@K/@/J@E@A@B@G@K|mffffm/@/mfffmm|mat/@/mixed|A/@/A|2/3/@/2/3|1st-cousins-once-removed/@/1st-cousins-once-removed|half/@/half|
-|J|L|J_L|0.281250000000000|J@E@A@D@H@L/@/J@E@I@L/@/J@F@I@L|mfffff/@/mfmf/@/mmmf|mat/@/mixed/@/pat|A/@/E/@/F|2/3/@/1/2/@/1/2|1st-cousins-once-removed/@/niece-uncle/@/niece-uncle|half/@/full/@/full|
-|K|L|K_L|0.296875000000000|K@H@L/@/K@H@D@A@E@I@L/@/K@G@B@A@D@H@L/@/K@G@B@A@E@I@L|mff/@/mffffmf/@/mmfffff/@/mmfffmf|mat/@/mixed/@/mixed/@/mixed|H/@/A/@/A/@/A|1/1/@/3/3/@/3/3/@/3/3|siblings/@/2nd-cousins/@/2nd-cousins/@/2nd-cousins|half/@/half/@/half/@/half|
+|ID 1|ID 2|dyad|relatedness coefficient|paths|pathline|kinline|LCA|depth|kinlabel|fullhalf|min_DGD|
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+|C|F|C_F|0|NA|NA|NA|NA|NA|nonkin|NA|1|
+|H|L|H_L|0.531250000000000|H@L/@/H@D@A@E@I@L|ff/@/ffffmf|mat/@/mixed|H/@/A|0/1/@/2/3|daughter&mother/@/1st-cousins-once-removed|half/@/half|2|
+|I|J|I_J|0.500000000000000|I@E@J/@/I@F@J|mfm/@/mmm|mat/@/pat|E/@/F|1/1/@/1/1|brothers/@/brothers|full/@/full|2|
+|K|L|K_L|0.296875000000000|K@H@L/@/K@H@D@A@E@I@L/@/K@G@B@A@D@H@L/@/K@G@B@A@E@I@L|mff/@/mffffmf/@/mmfffff/@/mmfffmf|mat/@/mixed/@/mixed/@/mixed|H/@/A/@/A/@/A|1/1/@/3/3/@/3/3/@/3/3|siblings/@/2nd-cousins/@/2nd-cousins/@/2nd-cousins|half/@/half/@/half/@/half|2|
+|C|G|C_G|0|NA|NA|NA|NA|NA|nonkin|NA|1|
+|D|G|D_G|0.125000000000000|D@A@B@G|fffm|mat|A|1/2|nephew&aunt|half|1|
+|D|J|D_J|0.125000000000000|D@A@E@J|fffm|mat|A|1/2|nephew&aunt|half|1|
 
-  
 [example_output_dyadlist.txt](example/example_output_dyadlist.txt)
 </details>
 </details>
