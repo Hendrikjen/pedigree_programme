@@ -43,13 +43,15 @@ int main(int argc, char *argv[]) {
     int default_year = 1900; 
     int simulation_duration = -1;
     int start_individuals = -1;
+    double birth_rate = 4.0;
+    double death_rate = 3.0;
     int cores = 1;
     double init_temp = 0; 
     double stop_temp = 1; 
     double temp_decay = 0.99; 
     bool reduce_node_space = false;
 
-    while ((option = getopt(argc, argv, "a:c:d:e:f:g:i:l:m:n:o:p:r:s:t:w:x:y:z:")) != -1) {
+    while ((option = getopt(argc, argv, "a:b:c:d:e:f:g:i:l:m:n:o:p:q:r:s:t:w:x:y:z:")) != -1) {
         switch (option) {
             case 'f':
                 functionality = optarg;
@@ -86,6 +88,12 @@ int main(int argc, char *argv[]) {
                 break;
             case 'n':
                 start_individuals = stoi(optarg);
+                break;
+            case 'b':
+                birth_rate = stod(optarg);
+                break;
+            case 'q':
+                death_rate = stod(optarg);
                 break;
             case 'a':
                 max_age = stoi(optarg);
@@ -137,6 +145,10 @@ int main(int argc, char *argv[]) {
             return 1;
         }else{
             cout << "start population simulation"<<endl;
+            if(output.empty()){
+                output = "simulated_population_"+to_string(start_individuals)+"n_"+to_string(simulation_duration)+"y";
+            }
+            population_simulation(simulation_duration,start_individuals,gestation_length,maturation_age_f,maturation_age_m,max_age,default_year,output,birth_rate,death_rate);
         }
     }else if(functionality == "annealing"){
         if(input_pedigree.empty() || input_dyadlist.empty()){
