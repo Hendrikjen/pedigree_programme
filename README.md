@@ -3,11 +3,8 @@
 <details>
 <summary>Installation guide</summary>
   
-- to download the programme either clone the repository or download (and don't forget to unzip) the _source_ folder to your local filesystem
-  - you can clone the repository by clicking on the green CODE button and copy the URL [https://github.com/Hendrikjen/pedigree_programme.git](https://github.com/Hendrikjen/pedigree_programme.git)
-  - open GitBash or a bash terminal (for instance in Visual Studio Code) and navigate to desired folder where you want to locate the cloned repository
-  - clone the repository with the command `git clone https://github.com/Hendrikjen/pedigree_programme.git`
-- after downloading or cloning the source code, open the command line and navigate into the folder _pedigree_programme/source/_
+- to get the programme, download (and don't forget to unzip) the repository to your local filesystem
+- after downloading the source code, open the command line and navigate into the folder _pedigree_programme/source/_
   - you can check with `ls` if there are multiple Headerfiles (.h) and the respective source code files (.cpp) as well as _main.cpp_ and the makefile _makefile_pedigree_programme_
 - run in the command line `make -f makefile_pedigree_programme`
 - use the command `./pedigree_programme` to start the programme (depending on what you want to do, you have to add further arguments after the command)
@@ -68,6 +65,12 @@ functionality == simulation</summary>
 - `-a <max_age>` [int]
   - **options**: age maximum in population (individuals who reach the maximum age will decease in the following year)
   - **default**: 200
+- `-b <birth_rate>` [double]
+  - **options**: specifies the annual increment in the number of offsprings born each year during the population simulation
+  - **default**: 4.0
+- `-q <death_rate>` [double]
+  - **options**: specifies the annual increment in the number of deaths each year during the population simulation
+  - **default**: 3.0
 - `-y <default_year>` [int]
   - **options**: start year for population simulation
   - **default**: 1900
