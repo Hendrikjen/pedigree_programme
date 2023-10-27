@@ -54,6 +54,7 @@ double dyad::get_r_diff(string kind_of_r){ // calc or gap
         }
     }catch(const std::exception &ex) {
         std::cerr << "Error in dyad::get_r_diff(): " << ex.what() << std::endl;
+        return 999.0;
     }
 }
 int dyad::get_indiv_1_idx(){
@@ -139,6 +140,7 @@ string dyad::print_paths(){
         }
     }catch(const std::exception &ex) {
         std::cerr << "Error in dyad::print_paths(): " << ex.what() << std::endl;
+        return "unable to print path";
     }
 }
 string dyad::get_kinlabel(){
@@ -255,6 +257,7 @@ string dyad::get_kinlabel(){
         }
     }catch(const std::exception &ex) {
         std::cerr << "Error in dyad::get_kinlabel(): " << ex.what() << std::endl;
+        return "unable to get kinlabel";
     }
 }
 string dyad::get_full_half(std::deque<std::deque<node*>> paths, string kinlabel_str,string lca_str){
@@ -324,6 +327,7 @@ string dyad::get_full_half(std::deque<std::deque<node*>> paths, string kinlabel_
         return output_full_half;
     }catch(const std::exception &ex) {
         std::cerr << "Error in dyad::get_full_half(): " << ex.what() << std::endl;
+        return "unable to get full/half";
     }
 }
 void dyad::compute_path_characteristics(){
@@ -447,6 +451,7 @@ string dyad::get_dyad_infos(){
         }
     }catch(const std::exception &ex) {
         std::cerr << "Error in dyad::get_dyad_infos(): " << ex.what() << std::endl;
+        return "unable to get dyad info";
     }
 }
 string dyad::get_r_infos(){

@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
                 default_year = stoi(optarg);
                 break;
             case 's':
-                simulation_duration = stoi(optarg);
+                simulation_duration = stoi(optarg); 
                 break;
             case 'n':
                 start_individuals = stoi(optarg);

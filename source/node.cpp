@@ -176,6 +176,7 @@ string node::compare_pedigree_infos(){
         }
     }catch(const std::exception &ex) {
         std::cerr << "Error in node::compare_pedigree_infos(): " << ex.what() << std::endl;
+        return "unable to compare pedigree infos";
     }
 }
 std::deque<node*>* node::get_affected_nodes_ptr(){ 
@@ -194,6 +195,7 @@ string node::get_affected_nodes_str(){
         return affected_nodes_str;
     }catch(const std::exception &ex) {
         std::cerr << "Error in node::get_affected_nodes_str(): " << ex.what() << std::endl;
+        return "unable to get affected nodes as string";
     }
 }
 string node::get_infos(bool nonparent,bool potparent){
@@ -221,6 +223,7 @@ string node::get_infos(bool nonparent,bool potparent){
         return info;
     }catch(const std::exception &ex) {
         std::cerr << "Error in node::get_infos(): " << ex.what() << std::endl;
+        return "unable to get node infos";
     }
 }
 void node::create_parent_ptr(std::deque <node> *all_nodes_ptr,bool reassigning){ 

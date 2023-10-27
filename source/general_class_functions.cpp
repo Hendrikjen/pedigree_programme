@@ -85,6 +85,7 @@ bool contains_ancestor(node* pot_offspring,node* pot_ancestor,std::deque <node> 
         return is_ancestor;
     }catch(const std::exception &ex) {
         std::cerr << "Error in contains_ancestor(): " << ex.what() << std::endl;
+        return false;
     }
 }
 double calculate_pure_f_xy(node*indiv_1,node*indiv_2,std::deque<dyad>*dyads_ptr,std::deque <node>*nodes_ptr,std::deque<std::deque<double>>* f_matrix,bool fill_in){ // calculates only the dyadic relatedness coefficient without path characteristics for r comparison
@@ -127,11 +128,12 @@ double calculate_pure_f_xy(node*indiv_1,node*indiv_2,std::deque<dyad>*dyads_ptr,
         return f_xy;
     }catch(const std::exception &ex) {
         std::cerr << "Error in calculate_pure_f_xy(): " << ex.what() << std::endl;
+        return 999.0;
     }
 }
 std::deque <node*> get_parent_pool(string sex,int mat_age_m,int mat_age_f,int gest_length, std::deque <node>*all_nodes_ptr, node* indiv, string nonparents){ // Returns pool of potential parents for a specific individual
+    std::deque<node*> filtered_nodes = {}; // output std::deque
     try{
-        std::deque<node*> filtered_nodes; // output std::deque
         int mat_age = 0;
         if(sex=="f"){
             mat_age = mat_age_f;
@@ -162,6 +164,7 @@ std::deque <node*> get_parent_pool(string sex,int mat_age_m,int mat_age_f,int ge
         return filtered_nodes;
     }catch(const std::exception &ex) {
         std::cerr << "Error in get_parent_pool(): " << ex.what() << std::endl;
+        return filtered_nodes;
     }
 }
 string all_nodes_to_population_file(std::deque <node> *all_nodes_ptr,string filename){ // save all_nodes as file
@@ -178,6 +181,7 @@ string all_nodes_to_population_file(std::deque <node> *all_nodes_ptr,string file
         return filename;
     }catch(const std::exception &ex) {
         std::cerr << "Error in all_nodes_to_population_file(): " << ex.what() << std::endl;
+        return "unable to save all nodes to pedigree file";
     }
 }
 std::deque<double> get_all_gaps(std::deque<gap>*gaps_ptr,std::deque<node>*all_nodes_ptr,int default_year){ // puts all gaps from the complete pedigree inside gaps_ptr (for simulated_annealing of the complete pedigree)
@@ -225,6 +229,8 @@ std::deque<double> get_all_gaps(std::deque<gap>*gaps_ptr,std::deque<node>*all_no
         return parent_stats; 
     }catch(const std::exception &ex) {
         std::cerr << "Error in get_all_gaps(): " << ex.what() << std::endl;
+        std::deque<double> parent_stats = {};
+        return parent_stats;
     }
 }
 void get_start_solution_all_gaps(double temperature,std::deque<gap>*gaps_ptr,std::deque<node>*all_nodes_ptr,std::deque<node>*current_nodes_ptr,int maturation_age_m,int maturation_age_f,int gestation_length,int default_year){ // fills all gaps in the pedigree in order to get a start solution for simulated annealing
@@ -308,8 +314,8 @@ void get_random_full_ped(string file,std::deque<node>*all_nodes_ptr,int maturati
     }
 }
 int get_full_generation_depth(node* indiv){
+    int full_gen = 0;
     try{
-        int full_gen = 0;
         bool complete = true;
         std::deque<node*> current_generation;
         current_generation.push_back(indiv);
@@ -328,6 +334,7 @@ int get_full_generation_depth(node* indiv){
         return full_gen;
     }catch(const std::exception &ex) {
         std::cerr << "Error in get_full_generation_depth(): " << ex.what() << std::endl;
+        return full_gen;
     }
 }
 

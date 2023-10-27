@@ -14,7 +14,7 @@ string generate_name(int number) {
         return name; 
     } catch (const std::exception &ex) {
         std::cerr << "Error in generate_name(): " << ex.what() << std::endl; 
-        return "";
+        return "unable to generate indiv name";
     }
 }
 std::deque <int> filter_for_pot_anc(string sex,int maturation_age,int current_year,std::deque<node>*all_nodes_ptr,int max_age){ // get pool of potential ancestors (parents) to choose from for pedigree simulation
@@ -32,6 +32,7 @@ std::deque <int> filter_for_pot_anc(string sex,int maturation_age,int current_ye
         }
     }catch(const std::exception &ex) {
         std::cerr << "Error in filter_for_pot_anc(): " << ex.what() << std::endl;
+        return filtered_nodes;
     }
     return filtered_nodes;
 }
@@ -83,7 +84,7 @@ void write_simulated_r_values_by_dyads(int simulation_duration,int start_individ
 }
 string population_simulation(int simulation_duration, int start_individuals,int gestation_length,int maturation_age_f,int maturation_age_m,int max_age, int default_year,string output,double birth_rate,double death_rate){ // Pipeline to simulate pedigree with given parameters (how many start_individuals and duration (years))
     try{ // simulate pedigree based on a given number of founder individuals for a given number of years
-        cout << "Initialize basic objects"<<endl;
+        cout << "initialize basic objects"<<endl;
         node imaginary_female("unkn_f","f","NA","NA","NA","NA","NA","NA",0,0);
         node imaginary_male("unkn_m","m","NA","NA","NA","NA","NA","NA",0,1);
         std::deque <node> all_nodes;
@@ -151,7 +152,7 @@ string population_simulation(int simulation_duration, int start_individuals,int 
                 females.erase(females.begin()+mom); // make sure mom cannot be choosen a second time in the current year (no twins)
                 name_i += 1;
             }
-            cout << no_deaths<<" deaths ... ";
+            cout << no_deaths<<" deaths"<<endl;
             // check if there are too old individuals (> max_age) & set random DOD
             int happened_deaths = 0;
             datefmt current_date(current_year,1,1);
@@ -200,7 +201,7 @@ string population_simulation(int simulation_duration, int start_individuals,int 
         return all_nodes_to_population_file(&all_nodes,output); // save simulated population
     }catch(const std::exception &ex) {
         std::cerr << "Error in population_simulation(): " << ex.what() << std::endl;
-        return "population simulation failed";
+        return "unable to simulate pedigree";
     }
 }
 string add_parental_gaps(string file,double mat_gaps, double pat_gaps, int start_individuals){ // load completely known pedigree and insert artificial gaps (depending on whether paternal or maternal, a different number of artificial gaps is generated)
@@ -247,5 +248,6 @@ string add_parental_gaps(string file,double mat_gaps, double pat_gaps, int start
         return all_nodes_to_population_file(&all_nodes,file+"_gaps"); // save population pedigree with gaps
     }catch(const std::exception &ex) {
         std::cerr << "Error in add_parental_gaps(): " << ex.what() << std::endl;
+        return "unable to add parental gaps to pedigree";
     }
 }

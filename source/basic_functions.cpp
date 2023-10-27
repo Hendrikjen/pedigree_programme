@@ -8,6 +8,7 @@ std::string to_string_with_precision(double number, int n) {
         return out.str();
     }catch(const std::exception &ex) {
         std::cerr << "Error in to_string_with_precision(double): " << ex.what() << std::endl;
+        return "unable to convert to string with precision";
     }
 }
 std::string to_string_with_precision(float number, int n) {
@@ -18,6 +19,7 @@ std::string to_string_with_precision(float number, int n) {
         return out.str();
     }catch(const std::exception &ex) {
         std::cerr << "Error in to_string_with_precision(float): " << ex.what() << std::endl;
+        return "unable to convert to string with precision";
     }
 }
 std::string to_string_with_precision(int number, int n) {
@@ -28,11 +30,12 @@ std::string to_string_with_precision(int number, int n) {
         return out.str();
     }catch(const std::exception &ex) {
         std::cerr << "Error in to_string_with_precision(int): " << ex.what() << std::endl;
+        return "unable to convert to string with precision";
     }
 }
 std::deque <string> str_split(string str, string pattern){
+    std::deque <string> output = {};
     try{
-        std::deque <string> output;
         int i = 0;
         int j = str.find(pattern);
         while (j != -1) {
@@ -44,6 +47,7 @@ std::deque <string> str_split(string str, string pattern){
         return output;
     }catch(const std::exception &ex) {
         std::cerr << "Error in str_split(): " << ex.what() << std::endl;
+        return output;
     }
 }
 bool is_leapyear(int year){ // return true if year is a leap year, else false
@@ -61,6 +65,7 @@ bool is_leapyear(int year){ // return true if year is a leap year, else false
         return is_leapyear;
     }catch(const std::exception &ex) {
         std::cerr << "Error in is_leapyear(): " << ex.what() << std::endl;
+        return false;
     }
 }
 int date_diff(datefmt date_1, datefmt date_2){ // determines difference between two dates in days
@@ -121,5 +126,6 @@ int date_diff(datefmt date_1, datefmt date_2){ // determines difference between 
         }
     }catch(const std::exception &ex) {
         std::cerr << "Error in date_diff(): " << ex.what() << std::endl;
+        return 0;
     }
 }

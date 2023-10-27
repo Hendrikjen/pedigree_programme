@@ -183,9 +183,10 @@ double load_data_for_sim_annealing(string file_full,string file_gaps, std::deque
         return normalize_factor;
     }catch(const std::exception &ex) {
         std::cerr << "Error in load_data_for_sim_annealing(): " << ex.what() << std::endl;
+        return 0.0;
     }
 }
-std::string get_next_solution_all_gaps(int count,double temperature,std::deque<gap>*gaps_ptr,int default_year,int maturation_age_m,int maturation_age_f,int gestation_length,std::deque<node>*all_nodes_ptr,std::deque<node>*new_nodes_ptr){
+string get_next_solution_all_gaps(int count,double temperature,std::deque<gap>*gaps_ptr,int default_year,int maturation_age_m,int maturation_age_f,int gestation_length,std::deque<node>*all_nodes_ptr,std::deque<node>*new_nodes_ptr){
     try{
         //cout << "\n\n ---------------------------- ["<<count<<"|"<<temperature<<"] NEXT SOLUTION  ---------------------------- \n";
         cout << "["<<count<<"|"<<temperature<<"] ";
@@ -234,6 +235,7 @@ std::string get_next_solution_all_gaps(int count,double temperature,std::deque<g
         return all_changed_indivs;
     }catch(const std::exception &ex) {
         std::cerr << "Error in get_next_soluation_all_gaps(): " << ex.what() << std::endl;
+        return "unable to get next solution all gaps";
     }
 }
 double compare_f_matrix(std::deque<std::deque<double>> &f_mat_1,std::deque<std::deque<double>> & f_mat_2,std::deque<node>*all_nodes_ptr,std::deque<node>*nodes_ptr_2, std::deque<int>*subset_idx_ptr, std::deque<dyad>*all_dyads_ptr){
@@ -268,6 +270,7 @@ double compare_f_matrix(std::deque<std::deque<double>> &f_mat_1,std::deque<std::
         }
     }catch(const std::exception &ex) {
         std::cerr << "Error in compare_f_matrix(): " << ex.what() << std::endl;
+        return -1;
     }
 }
 double get_init_temp_factor(std::deque<std::deque<double>> &f_mat,std::deque<node>*all_nodes_ptr){
@@ -292,6 +295,7 @@ double get_init_temp_factor(std::deque<std::deque<double>> &f_mat,std::deque<nod
         return init_temp_factor;
     }catch(const std::exception &ex) {
         std::cerr << "Error in get_init_temp_factor(): " << ex.what() << std::endl;
+        return 0;
     }
 }
 void fill_pure_f_matrix(std::deque<dyad>* all_dyads_ptr,std::deque<int>* subset_idx_ptr,std::deque<node>* all_nodes_ptr,std::deque<node>* current_nodes_ptr,std::deque<std::deque<double>>* f_matrix,bool full_ped,int dyads_start,int dyads_end,bool multithreading,int thread_no){

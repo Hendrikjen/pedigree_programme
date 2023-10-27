@@ -155,6 +155,7 @@ double calculate_f_xy(node * indiv_1,node * indiv_2,std::deque<std::deque<double
         return f_xy;
     }catch(const std::exception &ex) {
         std::cerr << "Error in calculate_f_xy(): " << ex.what() << std::endl;
+        return 999;
     }
 }
 void fill_f_matrix(std::deque<std::deque<double>> *f_matrix,int ncol, int nrow,std::deque <node> *all_nodes_ptr,std::deque <dyad> *all_dyads_ptr,map<string,int>*dyad_dict_ptr,bool reduce_node_space_tf,bool multithreading, int dyads_start,int dyads_end,int thread){ 
@@ -243,6 +244,7 @@ string all_nodes_info_file(std::deque <node> *all_nodes_ptr,std::map<string,int>
         return filename;
     }catch(const std::exception &ex) {
         std::cerr << "Error in all_nodes_info_file(): " << ex.what() << std::endl;
+        return "unable to write nodes info file";
     }
 }
 void write_dyad_list(std::deque <dyad> *all_dyads_ptr,std::deque<std::deque<double>> &f_mat,int ncol,string filename, string write_dyadlist){// writes assigned dyadlist into file
@@ -481,5 +483,6 @@ bool indivs_in_node_space(node* indiv_1, node* indiv_2,std::set<string>*node_spa
         return (i1_in_node_space & i2_in_node_space);
     }catch(const std::exception &ex) {
         std::cerr << "Error in indivs_in_node_space(): " << ex.what() << std::endl;
+        return false;
     }
 }
