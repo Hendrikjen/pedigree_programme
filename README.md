@@ -114,9 +114,9 @@ functionality == annealing</summary>
 </details>
 
 
-## Example
+## Input requirements
 <details>
-<summary>Input requirements</summary>
+<summary>Relatedness calculation</summary>
 
 #### Pedigree
 - Input file format: .txt (tab-separated)
@@ -144,7 +144,15 @@ functionality == annealing</summary>
   - ID names have to be unique and have to be unambiguously assignable to pedigree IDs; every focal ID has to be listed in the pedigree separately; ID names like _UNK_, _NA_, _unknown_, _unkn_f_, and _unkn_m_ have to be avoided
 - [example](example/example_input_dyad_selection.txt)
 </details>
+<details>
+<summary>Simulated Annealing</summary>
+  ...
+</details>
 
+## Example
+<details>
+<summary>Relatedness calculation</summary>
+  
 <details>
 <summary>Input/Output files</summary>
 
@@ -251,6 +259,15 @@ https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showi
 </p>
   
 </details>
+</details>
+<details>
+<summary>Population Simulation</summary>
+  ...
+</details>
+<details>
+<summary>Simulated Annealing</summary>
+  ...
+</details>
 
 ## Implementation
 <details>
@@ -270,27 +287,38 @@ Based on these recursive functions, the programme computes the relatedness betwe
 <details>
 <summary>Simulated Annealing</summary>
 
-#### Adapted Simulated Annealing Algorithm - Overview
-  
-1.  Get all gaps to fill in the incomplete pedigree
-2.  Create start solution by randomly determining missing parents from the pool of fitting parents for each gap
-3.  Relatedness coefficient calculation for each relevant dyad (dyads with IBD values to compare to)
-4.  Compare old versus new relatedness values for each relevant dyad and get the total difference between start solution and incomplete pedigree which ultimately serves as fitness function to be minimized: $$F =\Sigma\ |f(x,y) - g(x,y) | \to min$$ (with $f(x,y)$ as the pedigree-based dyadic relatedness and $g(x,y)$ as the dyadic realized relatedness)
-6.  Save current total difference as (currently) best difference and  start solution as (currently) best pedigree
-7.  While current temperature > stop temperature:
-    -  Create neighbor solution (exchange one potential parent with another fitting candidate)
-    -  Calculate new relatedness values for each  dyad in associated to one of the three altered individuals (the individual with the missing parent, the newly chosen parent candidate and the previously chosen parent candidate)
-    -  Compare old vs. new relatedness values for each relevant dyad and get the total difference between current pedigree (starting point for neighbor solution) and neighbor solution
-    -  if the new solution is worse, use the metropolis acceptance criterion to determine whether the new solution will be rejected or not: $$e^\frac{F_{n}-F_{c}}{T} > X\to [0,1]$$ 
+#### Adapted Simulated Annealing Algorithm
+
+Within the programme a simulated annealing algorithm is implemented to fill possibly existing gaps within a given pedigree. Therefor, it uses the discrepancy between user-provided realized relatedness values (for instance obtained from whole genome sequencing) and the calculated pedigree-derived relatedness values as cost function. While trying to minimize the cost/discrepancy by simulated annealing, the aim is to find the pedigree solution which explains best the variance, especially in case of missing ancestors which can be accompanied with an underestimation of relatedness values. 
+$$F =\Sigma\ |f(x,y) - g(x,y) | \to min$$ (with $f(x,y)$ as the pedigree-based dyadic relatedness and $g(x,y)$ as the dyadic realized relatedness)
+To fit the specific problem, the general simulated annealing algorithm is adapted as explained in the following outline:
+
+- At first, all pedigree gaps need to be identified.
+- Create an initial solution by randomly assigning parents from a pool of suitable candidates for each gap. Suitable candidate are parents who were alive and mature at the time of conception (male) or birth (female) and were not excluded as potential parent priorly due to genetic analysis or because a female has already an offspring in the respective cohort.
+- Calculation of the relatedness coefficient for each relevant dyad (those for which realized relatedness values are available)
+- Evaluate the difference between the realized and pedigree-derived relatedness values of the initial solution for each relevant dyad
+- Save the current difference as the best-known difference, and the initial solution as the best pedigree.
+- Iteration: While the current temperature is above the (given) stop temperature:
+  - Create a new solution by exchanging one potential parent with another suitable candidate.
+  - Calculate new relatedness values for dyads affected by this change (all relevant dyads which include the offspring, the old and the new parent candidate).
+  - Compare the old and new relatedness values to determine the discrepancy between the current and the new solution.
+  - If the new solution is worse, apply the Metropolis acceptance criterion to decide whether to accept it or not: $$e^\frac{F_{n}-F_{c}}{T} > X\to [0,1]$$ 
  (with $F_n$ as fitness function of the new solution and $F_c$ of the current solution; $T$ as temperature and $X$ as random number in the range between 0 and 1)
-    - if true, set new solution as new current solution (starting point for next solution), else reject new solution and previous current solution endures
-    - if necessary update best difference/pedigree
-7.  save last pedigree solution in file
+  - If accepted (or the new solution is better in the first place), the new solution becomes the current solution; otherwise, it's rejected, and the previous solution remains in place.
+  - If necessary, update the best difference and pedigree.
+- Finally, save the last pedigree solution in a file.
+
 
 </details>
 
 ## Contribution and citation
-<details>
-<summary>...</summary>
- </details>
+I want to thank and express my deep gratitude to all of my collaborators who contributed to this project and who never failed to come up with helpful recommandations, fresh ideas and new perspectives. The unconditional support, encouragement and guidance of my supervisors Annika Freudiger, Thomas Gatter, Peter Stadler and Anja Widdig was essential for bringing this project to a successful end. 
+
+Please use the BibTex format, provided by Github or cite this programme as 
+
+**Westphal, H. (2023). Pedigree programme (Version 1.0.0) [Computer software].** _https://github.com/Hendrikjen/pedigree_programme_
+
+Further background information may be found in my [master thesis](master%20thesis/MA_Assessing-dyadic-relatedness-in-rhesus-macaques-using-pedigree-data_HWestphal_2023.pdf).
+
+Contact email for further programme related questions: hw53vake@studserv.uni-leipzig.de
  
