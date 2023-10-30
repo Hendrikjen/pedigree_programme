@@ -13,6 +13,7 @@ Since behavioural ecologists often have to deal with incomplete pedigree, due to
   - you can check with `ls` if you are in the correct folder if there are multiple Headerfiles (.h) and the respective source code files (.cpp) as well as _main.cpp_ and the makefile _makefile_pedigree_programme_
 - run in the command line `make -f makefile_pedigree_programme`
 - use the command `./pedigree_programme` to start the programme (depending on what you want to do, you have to add further arguments after the command)
+- for general information you can type `./pedigree_programme -h`to list all possible command line arguments, or `./pedigree_programme -v` to get the current version
 </details>
 
 <details>
@@ -91,6 +92,9 @@ functionality == annealing</summary>
 - `-p <input_pedigree>` [string]: path to pedigree file (with gaps), e.g. _pedigree.txt_
 
 #### optional arguments
+- `-c <cores>` [int]
+  - **options**: number of cores for multiprocessing
+  - **default**: 1 (no multiprocessing)
 - `-i <init_temp>` [double]
   - **options**: start temperature 
   - **default**: [empty] (automatically calculated)
@@ -136,10 +140,12 @@ functionality == annealing</summary>
 |birthseason |int|0| year
 |mom_ID |string|unknown| have to be relatable to exactly one ID, respectively one female individual in the pedigree
 |sire_ID |string|unknown| have to be relatable to exactly one ID, respectively one male individual in the pedigree
-|DOB |string| NA| in the format: 01-01-1900
-|DOD |string|NA| in the format: 01-01-1900
-|nonsire |string| NA|IDs of previously excluded sires strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential sire within the pedigree
-|nondam |string| NA|IDs of previously excluded moms strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential mother within the pedigree
+|DOB |string (dateformat)| NA| in the format: 01-01-1900
+|DOD |string (dateformat)|NA| in the format: 01-01-1900
+|nonsire |string| NA|IDs of previously excluded sires strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential sire within the pedigree, else the individual will be assumed to be a founder individual
+|nondam |string| NA|IDs of previously excluded moms strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential mother within the pedigree, else the individual will be assumed to be a founder individual|
+
+- [example](example/example_input_pedigree.txt)
 
 #### Dyad Selection
 - Input file format: .txt (tab-separated) 
@@ -157,13 +163,12 @@ functionality == annealing</summary>
 ## Example
 <details>
 <summary>Relatedness calculation</summary>
-  
-<details>
-<summary>Input/Output files</summary>
-
 <p align="center">
   <img src="example/mini_example_git.png" width="300">
 </p>
+<details>
+<summary>Input/Output files</summary>
+
 <details>
 <summary> Input file (pedigree)
 </summary>
@@ -258,8 +263,10 @@ To further explain the column in the dyadlist output, we will look on the exampl
 |fullhalf | whether two identical paths exist with different common ancestors, e.g. differentiation between full- and half-siblings | half |
 |min\_DGD | minimal dyadic genealogical depth states the pedigree completeness for the dyad; i.e. the minimal amount of fully resolved generations starting from both focals | 1 |
 
+
 <p align="center">
 <img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showing_degrees_of_relationship.svg" width="500">
+
 https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showing_degrees_of_relationship.svg
 </p>
   
@@ -267,7 +274,8 @@ https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showi
 </details>
 <details>
 <summary>Population Simulation</summary>
-  ...
+
+examplary output of a simulated pedigree with 20 founder individuals born/start in 1950, simulated for 10 years: [simulated pedigree](example/population_simulation/example_simulation.txt) and the respective list of [dyadic relatedness coefficients](example/population_simulation/example_simulation_dyadic_paths.txt) for all 1442 individuals.
 </details>
 <details>
 <summary>Simulated Annealing</summary>
@@ -277,22 +285,26 @@ https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showi
 ## Implementation
 <details>
 <summary>Relatedness Coefficient</summary>
-### Abridgement from the [master thesis]()
-The genealogy G is delineated as a directed, acyclic graph with two distinct classes of vertices, $V_1$ (males) and $V_2$ (females), with each node referring to an unique individual.
-Edges are defined as unidirectional parent/offspring relationships which means that each child has one edge coming from its mother, and one coming from its father. To ensure that each individual has a maternal and paternal edge, the graph comprises of two additionally, imaginary nodes $\rho_1\ \epsilon\ V_1$ and $\rho_2\ \epsilon\ V_2$ which are the compensatory substitute in case of an unknown dam or sire.
-Imaginary individuals were considered as unrelated to each other as well as unrelated to any other individual $x\ \epsilon\ V: f\left(\rho_1,\rho_2\right)=f\left(x,\rho_1\right)=f\left(x,\rho_2\right)=0$, while the relatedness of an individual $x\ \epsilon\ V$ to itself is set as $f\left(x,x\right)=1$. Otherwise, the relatedness coefficient $f\left(x,y\right)$ of a dyad, consisting of the two vertices $x,\ y\ \epsilon\ V$, is given by the recursive formula 
-$$f\left(x,y\right)=\ \frac{1}{4}\left[f\left(x_1,y_1\right)+f\left(x_1,y_2\right)+f\left(x_2,y_1\right)+f(x_2,y_2)\right]$$
-with $x_1,\ x_2$ as parental vertices of $x$ and $y_1,\ y_2$ as parents of $y (x_1,\ y_1\ \epsilon\ V_1$ and $x_2,\ y_2\ \epsilon\ V_2$). Furthermore, the relatedness coefficient calculation between an individual $x$ and its ancestor $x_i$ is expressed as 
+
+#### Recursive relatedness coefficient calculation [^1]
+
+To calculate the dyadic relatedness coefficient, the pedigree G is conceived as as a directed, acyclic graph, consisting of two distinct classes of vertices, $V_1$ (males) and $V_2$ (females) whereas each vertex represents an individual. Edges within the graph referred to one-directional, direct kinship bonds between parent and offspring, which implies that for each (heterogamous) node at least two edges exist (to the mother and to the father), or more in case of own offspring. But while in reality, pedigrees often consists of missing parents, two imaginary nodes $\rho_1\ \epsilon\ V_1$ and $\rho_2\ \epsilon\ V_2$ are added, serving as a compensatory substitute for unknown mothers or sires.
+
+Generally, the relatedness coefficient of an individual $x\ \epsilon\ V$ to itself is stated as $f\left(x,x\right)=1$ while the relatedness of two different focals $f\left(x,y\right)$ can be expressed by the following recursive formula 
+$$f\left(x,y\right)=\ \frac{1}{4}\left[f\left(x_1,y_1\right)+f\left(x_1,y_2\right)+f\left(x_2,y_1\right)+f(x_2,y_2)\right]$$ ($x_1,\ x_2$ as parents of $x$; $y_1,\ y_2$ as parents of $y$ while $x_1,\ y_1\ \epsilon\ V_1$ and $x_2,\ y_2\ \epsilon\ V_2$). 
+In the particular case of determining the relatedness coefficient between an individual $x$ and its ancestor $x_i$, it is calculated by
 $$f\left(x,x_i\right)=\ \frac{1}{2}\left[f\left(x_1,x_i\right)+f\left(x_2,x_i\right)\right]$$
-with $x,\ x_i\ \epsilon\ V;\ x_1\ \epsilon\ V_1$ and $x_2\ \epsilon\ V_2$ as parents of $x$; and more specific in case $x_i \equiv x_1 \lor x_2$, the relatedness between parent and offspring is calculated by 
+($x,\ x_i\ \epsilon\ V;\ x_1\ \epsilon\ V_1$ and $x_2\ \epsilon\ V_2$ as parents of $x$). Even more specific, if $x_i \equiv x_1 \lor x_2$, the relatedness between parent and offspring is given by 
 $$f\left(x,x_1\right)=\ \frac{1}{2}\left[1+f\left(x_1,x_2\right)\right]$$
-Based on these recursive functions, the programme computes the relatedness between a dyad stepwise - comparable with a breadth-first-search - until either their lowest common ancestor is found, or it terminates due to a trivial solution.
+At last, in case of imaginary nodes, $\rho_1$ and $\rho_2$ are assumed as unrelated to each other or any other individual $x\ \epsilon\ V:$ 
+$$f\left(\rho_1,\rho_2\right)=f\left(x,\rho_1\right)=f\left(x,\rho_2\right)=0$$
+Based on these functions, the programme computes the relatedness between a dyad step by step until it either identifies their lowest common ancestor or terminates due to a trivial solution.
 </details>
 
 <details>
-<summary>Simulated Annealing</summary>
+<summary>Simulated Annealing </summary>
 
-#### Adapted Simulated Annealing Algorithm
+#### Adapted Simulated Annealing Algorithm [^1]
 
 Within the programme a simulated annealing algorithm is implemented to fill possibly existing gaps within a given pedigree. Therefor, it uses the discrepancy between user-provided realized relatedness values (for instance obtained from whole genome sequencing) and the calculated pedigree-derived relatedness values as cost function. While trying to minimize the cost/discrepancy by simulated annealing, the aim is to find the pedigree solution which explains best the variance, especially in case of missing ancestors which can be accompanied with an underestimation of relatedness values. 
 $$F =\Sigma\ |f(x,y) - g(x,y) | \to min$$ (with $f(x,y)$ as the pedigree-based dyadic relatedness and $g(x,y)$ as the dyadic realized relatedness)
@@ -326,4 +338,6 @@ Please use the BibTex format, provided by Github or cite this programme as
 Further background information may be found in my [master thesis](master%20thesis/MA_Assessing-dyadic-relatedness-in-rhesus-macaques-using-pedigree-data_HWestphal_2023.pdf).
 
 Contact email: hw53vake@studserv.uni-leipzig.de
+
+[^1]: Westphal, H. (2023). Assessing dyadic relatedness in rhesus macaques using pedigree data [Master thesis]. [_https://github.com/Hendrikjen/pedigree_programme/master thesis/MA_Assessing-dyadic-relatedness-in-rhesus-macaques-using-pedigree-data_HWestphal_2023.pdf_](master%20thesis/MA_Assessing-dyadic-relatedness-in-rhesus-macaques-using-pedigree-data_HWestphal_2023.pdf)
  
