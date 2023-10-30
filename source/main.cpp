@@ -29,28 +29,31 @@ using namespace std::chrono;
 namespace fs = std::filesystem;
 
 void display_help(){
-    cout << "-a <maxage> [int][-|o|-]\n   options: age maximum in population (individuals who reach the maximum age \n            will decease in the following year)\n   default: 200"<<endl;
-    cout << "-b <birthrate> [double][-|o|-]\n   options: specifies the annual increment in the number of offsprings born \n            each year during the population simulation\n   default: 4.0"<<endl;
+    cout << "\nCommand Line Arguments:\nPlease make sure to select a functionality (relatedness, simulation, or annealing) \nand to specify all required arguments for the respective function --> see info in \nsquare brackets for each argument: [r|-|o]\n  o = optional\n  r = required\n  - = not necessary/used)"<<endl;
+    cout << "Format: \n  -argument_identifier <argument> [data type][relatedness|simulation|annealing]\n  + further explanation (options & default values)"<<endl;
+    cout << "Example (required arguments): \n  ./pedigree_programme -f relatedness -p pedigree.txt \n  ./pedigree programme -f simulation -n 20 -s 10\n  ./pedigree programme -f annealing -p pedigree.txt -d dyads.txt\n\n -----------------------------------------------------------------------------\n"<<endl;
+    cout << "-a <max_age> [int][-|o|-]\n   options: age maximum in population (individuals who reach the maximum age \n            will decease in the following year)\n   default: 200"<<endl;
+    cout << "-b <birth_rate> [double][-|o|-]\n   options: specifies the annual increment in the number of offsprings born \n            each year during the population simulation\n   default: 4.0"<<endl;
     cout << "-c <cores> [int][o|-|o]\n   options: number of cores for multiprocessing\n   default: 1 (no multiprocessing)"<<endl;
-    cout << "-d <inputdyadlist> [string][o|-|r]\n   options: path to file with selected dyads (relatedness calculation) or \n            path to dyadlist with realized relatedness values (simulated \n            annealing)\n   default: [empty] (all dyads within the pedigree will be analysed)"<<endl;
-    cout << "-e <outputextend> [string][o|-|-]\n   options:\n     - full: returns the full dyadlist output, including path characteristics\n     - reduced: returns only dyadlist with dyadic relatedness coefficients\n   default: full"<<endl;
+    cout << "-d <input_dyadlist> [string][o|-|r]\n   options: path to file with selected dyads (relatedness calculation) or \n            path to dyadlist with realized relatedness values (simulated \n            annealing)\n   default: [empty] (all dyads within the pedigree will be analysed)"<<endl;
+    cout << "-e <output_extend> [string][o|-|-]\n   options:\n     - full: returns the full dyadlist output, including path characteristics\n     - reduced: returns only dyadlist with dyadic relatedness coefficients\n   default: full"<<endl;
     cout << "-f <functionality> [string][r|r|r]\n   options: \n     - relatedness: calculates the dyadic relatedness (+ path \n       characteristics) from a given pedigree\n     - simulation: simulates a pedigree\n     - annealing: starts a simulated annealing algorithm to fill the \n       parental gaps within a pedigree based on realized relatedness values\n   default: [empty] (the programme starts without task)"<<endl;
-    cout << "-g <gestationlength> [int][o|o|o]\n   options: gestation length in days\n   default: 200"<<endl;
+    cout << "-g <gestation_length> [int][o|o|o]\n   options: gestation length in days\n   default: 200"<<endl;
     cout << "-h (without argument): display help"<<endl;
-    cout << "-i <inittemp> [double][-|-|o]\n   options: start temperature \n   default: [empty] (automatically calculated)"<<endl;
-    cout << "-l <generationlimit> [int][o|-|-]\n   options: restricts the distance to potential lowest common ancestors, \n            e.g. if generationlimit == 3, only paths up to the grandparent \n            generation will be returned, great-grand-parents will be considered as \n            unrelated\n   default: [empty] (no limitation; all ancestors of a focal will be \n            considered as potential lowest common ancestor)"<<endl;
-    cout << "-m <maturationagem> [int][o|o|o]\n   options: maturation age of males in days\n   default: 1250"<<endl;
-    cout << "-n <startindividual> [int][-|r|-]: number of individuals at the start of the \n   simulation"<<endl;
+    cout << "-i <init_temp> [double][-|-|o]\n   options: start temperature \n   default: [empty] (automatically calculated)"<<endl;
+    cout << "-l <generation_limit> [int][o|-|-]\n   options: restricts the distance to potential lowest common ancestors, \n            e.g. if generationlimit == 3, only paths up to the grandparent \n            generation will be returned, great-grand-parents will be considered as \n            unrelated\n   default: [empty] (no limitation; all ancestors of a focal will be \n            considered as potential lowest common ancestor)"<<endl;
+    cout << "-m <maturation_age_m> [int][o|o|o]\n   options: maturation age of males in days\n   default: 1250"<<endl;
+    cout << "-n <start_individual> [int][-|r|-]: number of individuals at the start of the \n   simulation"<<endl;
     cout << "-o <output> [string][o|o|o]\n   options: custom output name (prefix) e.g. if output == programmeoutput, the \n            resulting output files will be named 'programmeoutputdyadlist.txt' \n            and 'programmeoutputinfo.txt'\n   default: [empty] (the input file name will be used as prefix)"<<endl;
-    cout << "-p <inputpedigree> [string][r|-|r]: path to pedigree file, e.g. pedigree.txt"<<endl;
-    cout << "-q <deathrate> [double][-|o|-]\n   options: specifies the annual increment in the number of deaths each year \n            during the population simulation\n   default: 3.0"<<endl;
-    cout << "-r <reduce node space> [bool][o|-|-]\n   options: \n     - true: before calculating the dyadic relatedness, the number of \n       individuals will be reduced which means that only descendants of \n       the focal's common ancestors will be considered in the analysis\n       (it effectively reduces the search space without affecting the \n       result, but might be only beneficial in almost completely reconstructed \n       pedigrees with a long history due to the extra computational cost)\n     - false: no prior narrowing of the search space\n   default: false"<<endl;
-    cout << "-s <simulationduration> [int][-|r|-]: number of years to restrict the duration \n   of the simulation"<<endl;
-    cout << "-t <stoptemp> [double][-|-|o]\n   options: stop temperature, if current temperature falls below stop temperature, \n            the algorithm terminates\n   default: 1.0"<<endl;
+    cout << "-p <input_pedigree> [string][r|-|r]: path to pedigree file, e.g. pedigree.txt"<<endl;
+    cout << "-q <death_rate> [double][-|o|-]\n   options: specifies the annual increment in the number of deaths each year \n            during the population simulation\n   default: 3.0"<<endl;
+    cout << "-r <reduce_node_space> [bool][o|-|-]\n   options: \n     - true: before calculating the dyadic relatedness, the number of \n       individuals will be reduced which means that only descendants of \n       the focal's common ancestors will be considered in the analysis\n       (it effectively reduces the search space without affecting the \n       result, but might be only beneficial in almost completely reconstructed \n       pedigrees with a long history due to the extra computational cost)\n     - false: no prior narrowing of the search space\n   default: false"<<endl;
+    cout << "-s <simulation_duration> [int][-|r|-]: number of years to restrict the duration \n   of the simulation"<<endl;
+    cout << "-t <stop_temp> [double][-|-|o]\n   options: stop temperature, if current temperature falls below stop temperature, \n            the algorithm terminates\n   default: 1.0"<<endl;
     cout << "-v (without argument): version information"<<endl;
-    cout << "-w <maturationagef> [int][o|o|o]\n   options: maturation age of females in days\n   default: 1095"<<endl;
-    cout << "-x <tempdecay> [double][-|-|o]\n   options: the temperature multiplication factor to determine the number of \n            iterations \n   default: 0.99"<<endl;
-    cout << "-y <defaultyear> [int][-|o|-]\n   options: start year for population simulation\n   default: 1900\n";
+    cout << "-w <maturation_age_f> [int][o|o|o]\n   options: maturation age of females in days\n   default: 1095"<<endl;
+    cout << "-x <temp_decay> [double][-|-|o]\n   options: the temperature multiplication factor to determine the number of \n            iterations \n   default: 0.99"<<endl;
+    cout << "-y <default_year> [int][-|o|-]\n   options: start year for population simulation\n   default: 1900\n";
 }
 int main(int argc, char *argv[]) {
     auto start = high_resolution_clock::now();
@@ -150,11 +153,8 @@ int main(int argc, char *argv[]) {
                 }
                 break;
             case 'h':
-                cout << "display help()"<<endl;
-                return 1;
-            case 'v':
-                cout << "Version 1.0.0"<<endl;
-                return 1;
+                display_help();
+                return 0;
             default:
                 std::cerr << "Invalid argument. Please check the documentation for available options, clarification and the required data types." << endl;
                 return 1;
