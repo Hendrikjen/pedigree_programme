@@ -1,11 +1,16 @@
 # pedigree programme
+
+[xxx] is a pedigree analysis tool which was developed and implemented as part of a bioinformatic's master thesis in 2023 at Leipzig University. It is a C++ written console application which was designed to calculate dyadic relatedness coefficients from a given pedigree without being limited by the number of considered generations, the number of individuals, or the depth and incompleteness of the pedigree itself. Additionally, the programme provides some further informations about the respective relatedness paths between the focal individuals, for instance the name and sex of ancestors along the path, the lowest common ancestors, the kinlabel, or the minimal  detectable inbreeding value for each individual. The functionality and accuracy was adequately tested with multiple simulated populations as well as with a real pedigree of over 12 000 rhesus macaques from Cayo Santiago.
+
+Since behavioural ecologists often have to deal with incomplete pedigree, due to unknown sires, the second part of the programme focus on an implementation of an adapted simulated annealing algorithm to find the best fully-reconstructed pedigree solution based on realized relatedness values obtained from whole genome sequencing. Eventually, it aims to provide a pedigree without gaps for which the difference between the provided realized relatedness values and the simultaneously calculated pedigree-derived relatedness coeffiecients is minimal over all dyads (see more informations in the section _Implementation/Simulated annealing_)
+
 ## Getting Started
 <details>
 <summary>Installation guide</summary>
   
 - to get the programme, download (and don't forget to unzip) the repository to your local filesystem
-- after downloading the source code, open the command line and navigate into the folder _pedigree_programme/source/_
-  - you can check with `ls` if there are multiple Headerfiles (.h) and the respective source code files (.cpp) as well as _main.cpp_ and the makefile _makefile_pedigree_programme_
+- after downloading the source code, open the command line and navigate within the terminal into the folder _pedigree_programme/source/_
+  - you can check with `ls` if you are in the correct folder if there are multiple Headerfiles (.h) and the respective source code files (.cpp) as well as _main.cpp_ and the makefile _makefile_pedigree_programme_
 - run in the command line `make -f makefile_pedigree_programme`
 - use the command `./pedigree_programme` to start the programme (depending on what you want to do, you have to add further arguments after the command)
 </details>
@@ -312,7 +317,7 @@ To fit the specific problem, the general simulated annealing algorithm is adapte
 </details>
 
 ## Contribution and citation
-I want to thank and express my deep gratitude to all of my collaborators who contributed to this project and who never failed to come up with helpful recommandations, fresh ideas and new perspectives. The unconditional support, encouragement and guidance of my supervisors Annika Freudiger, Thomas Gatter, Peter Stadler and Anja Widdig was essential for bringing this project to a successful end. 
+I want to thank and express my deep gratitude to all people who contributed to this project and who never failed to come up with helpful recommandations, fresh ideas and new perspectives. Especially, the unconditional support, encouragement and guidance of my supervisors A. Freudiger, T. Gatter, P. Stadler and A. Widdig was essential for bringing this project to a successful end. 
 
 Please use the BibTex format, provided by Github or cite this programme as 
 
@@ -320,5 +325,5 @@ Please use the BibTex format, provided by Github or cite this programme as
 
 Further background information may be found in my [master thesis](master%20thesis/MA_Assessing-dyadic-relatedness-in-rhesus-macaques-using-pedigree-data_HWestphal_2023.pdf).
 
-Contact email for further programme related questions: hw53vake@studserv.uni-leipzig.de
+Contact email: hw53vake@studserv.uni-leipzig.de
  
