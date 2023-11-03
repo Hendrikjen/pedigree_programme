@@ -97,7 +97,12 @@ functionality == annealing</summary>
   - **default**: 1 (no multiprocessing)
 - `-i <init_temp>` [double]
   - **options**: start temperature 
-  - **default**: [empty] (automatically calculated)
+  - **default**: [empty] (automatically calculated by $init_factor (= highest mean relatedness of an individual) * n_{nodes} * 1.5$)
+- `-k <visualization>` [bool]
+  - **options**: 
+    - _true_: keep track of simulated annealing steps (the respective relatedness variance and if they are rejected) 
+    - _false_: prior simulated annealing steps are not recorded/returned
+  - **default**: true
 - `-t <stop_temp>` [double]
   - **options**: stop temperature, if current temperature falls below stop temperature, the algorithm terminates
   - **default**: 1.0
@@ -113,12 +118,18 @@ functionality == annealing</summary>
 - `-g <gestation_length>` [int]
   - **options**: gestation length in days
   - **default**: 200
+- `-j <twins>` [bool]
+  - **options**: 
+    - _true_: twins are possible
+    - _false_: twins are not possible or rare to the point that potential mom candidates can be excluded if the have already an offspring in the respective birth cohort
+  - **default**: false
 - `-m <maturation_age_m>` [int]
   - **options**: maturation age of males in days
   - **default**: 1250
 - `-w <maturation_age_f>` [int]
   - **options**: maturation age of females in days
   - **default**: 1095
+
 
 </details>
 
@@ -157,7 +168,36 @@ functionality == annealing</summary>
 </details>
 <details>
 <summary>Simulated Annealing</summary>
-  ...
+#### Pedigree
+- Input file format: .txt (tab-separated)
+- no header
+- empty NA values (like "") lead to adverse behaviour or programme abort
+- columns (order and format is mandatory): ID, sex, birthseason/year, mom_ID, sire_ID, day of birth (DOB), day of death (DOD), nonsire, nondam
+
+|column|data type|missing value|comment|
+|-|-|-|-|
+|ID |string| ID names like _UNK_, _NA_, _unknown_, _unkn_f_, and _unkn_m_ have to be avoided|ID names have to be unique and have to be unambiguously assignable to parent IDs; every parent ID from mom_ID or sire_ID has to be listed in the pedigree separately
+|sex |char| u| usage of the following options only _f_ = female, _m_ = male, or _u_ = unknown sex
+|birthseason |int|0| year
+|mom_ID |string|unknown| have to be relatable to exactly one ID, respectively one female individual in the pedigree
+|sire_ID |string|unknown| have to be relatable to exactly one ID, respectively one male individual in the pedigree
+|DOB |string (dateformat)| NA| in the format: 01-01-1900
+|DOD |string (dateformat)|NA| in the format: 01-01-1900
+|nonsire |string| NA|IDs of previously excluded sires strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential sire within the pedigree, else the individual will be assumed to be a founder individual
+|nondam |string| NA|IDs of previously excluded moms strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential mother within the pedigree, else the individual will be assumed to be a founder individual|
+
+- [example](example/example_input_pedigree.txt)
+
+#### Dyad Information
+- Input file format: .txt (tab-separated) 
+- no header
+- empty NA values (like "") lead to adverse behaviour or programme abort
+- only dyads listed within this file will be considered as relevant for minimizing the variance between the pedigree-derived relatedness coefficient and the realized realtedness value
+- columns (order and format is mandatory): ID_1, ID_2, pedigree_r, real_r
+  - ID names have to be unique and have to be unambiguously assignable to pedigree IDs; every focal ID has to be listed in the pedigree separately; ID names like _UNK_, _NA_, _unknown_, _unkn_f_, and _unkn_m_ have to be avoided
+  - pedigree_r: dyadic relatedness coefficient from the incomplete pedigree; no NA values possible
+  - real_r: realized relatedness values of the dyad, obtained for instance from shared IBD segments; no NA values possible
+- [example](example/example_input_dyad_data.txt)
 </details>
 
 ## Example
