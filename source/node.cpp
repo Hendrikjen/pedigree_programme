@@ -32,13 +32,21 @@ string node::get_sex(){
 string node::get_name(){
     return name;
 }
-string node::get_mom(){
-    return mom;
+string node::get_mom(string unk){ // if unk == "unknown" return "unknown" if mom is not known, else (default) return "unkn_f"
+    if(unk == "unknown" && mom == "unkn_f"){
+        return "unknown";
+    }else{
+        return mom;
+    }
 }
-string node::get_sire(){
-    return sire;
+string node::get_sire(string unk){// if unk == "unknown" return "unknown" if sire is not known, else (default) return "unkn_m"
+    if(unk == "unknown" && sire == "unkn_m"){
+        return "unknown";
+    }else{
+        return sire;
+    }
 }
-string node::get_parent(string type){// "f" or "m" or "dyad"
+string node::get_parent(string type){// get parent (mom, sire, or both) based on the given type: "f" or "m" or "dyad"
     if(type == "f"){
         return node::mom;
     }else if(type == "m"){
@@ -124,7 +132,7 @@ void node::set_pot_sires(string pot_sires){
 void node::set_pot_moms(string pot_moms){
     node::pot_moms = pot_moms;
 }
-void node::push_back_pot_parent(string sex,int idx){
+void node::push_back_pot_parent(string sex,int idx){ // push potential parent index to mom or sire pool (depending on the given sex)
     if(sex=="f"){
         node::mom_pool.push_back(idx);
     }else if(sex=="m"){
@@ -153,25 +161,25 @@ void node::set_DOD(string DOD){
     }
 }
 void node::set_unkn_x(){
-    if(node::mom=="unknown"){
+    if(node::mom=="unknown" || node::mom=="NA" || node::mom=="UNK"){
         node::mom = "unkn_f";
     }
-    if(node::real_mom=="unknown"){
+    if(node::real_mom=="unknown" || node::real_mom=="NA" || node::real_mom=="UNK"){
         node::real_mom = "unkn_f";
     }
-    if(node::sire=="unknown"){
+    if(node::sire=="unknown" || node::sire=="NA"||node::sire=="UNK"){
         node::sire = "unkn_m";
     }
-    if(node::real_sire=="unknown"){
+    if(node::real_sire=="unknown" || node::real_sire=="NA" || node::real_sire=="UNK"){
         node::real_sire = "unkn_m";
     }
 }
-string node::compare_pedigree_infos(){
+string node::compare_pedigree_infos(){ // compare (currently set) parents and real parents of the node & check if they are correctly assigned
     try{
-        node::set_unkn_x();
-        if(node::mom==node::real_mom && node::sire==node::real_sire){
+        node::set_unkn_x(); // ensure that each unknown parent is named with "unkn_m"/"unkn_f"
+        if(node::mom==node::real_mom && node::sire==node::real_sire){ // if both parents are correctly assigned
             return "true";
-        }else{
+        }else{ // either mom, or sire, or both are assigned wrong
             return ("false\t[real_mom/mom] " + node::real_mom+"/"+node::mom + "\t[real_sire/sire] "+node::real_sire+"/"+node::sire);
         }
     }catch(const std::exception &ex) {
@@ -182,10 +190,10 @@ string node::compare_pedigree_infos(){
 std::deque<node*>* node::get_affected_nodes_ptr(){ 
     return &(node::affected_nodes); 
 }
-string node::get_affected_nodes_str(){
+string node::get_affected_nodes_str(){ // iterate through (nodes which would be possibly affected if the current nodes changes) & string them together with @ as delimiter
     try{
         string affected_nodes_str = "";
-        for(int i = 0;i<affected_nodes.size();i++){
+        for(int i = 0;i<affected_nodes.size();i++){ 
             if(i==0){
                 affected_nodes_str += affected_nodes[i]->get_name();
             }else{
@@ -198,7 +206,7 @@ string node::get_affected_nodes_str(){
         return "unable to get affected nodes as string";
     }
 }
-string node::get_infos(bool nonparent,bool potparent){
+string node::get_infos(bool nonparent,bool potparent){ // generate string info about node attributes (name, sex, DOB/DOD) + if choosen info about non parents or potential parents
     try{
         string info = name;
         if(sex=="f"||sex=="m"){
@@ -207,8 +215,8 @@ string node::get_infos(bool nonparent,bool potparent){
         else{
             info.append(", unknown sex");
         }
-        if(get_DOB().get_date()!="0-0-0"){//birthseason!=0){
-            info.append(", born: " + get_DOB().get_date());//to_string(birthseason));
+        if(get_DOB().get_date()!="0-0-0"){
+            info.append(", born: " + get_DOB().get_date());
         }
         if(get_DOD().get_date()!="0-0-0"){
             info.append(", died: " + get_DOD().get_date());
@@ -226,59 +234,56 @@ string node::get_infos(bool nonparent,bool potparent){
         return "unable to get node infos";
     }
 }
-void node::create_parent_ptr(std::deque <node> *all_nodes_ptr,bool reassigning){ 
+void node::create_parent_ptr(std::deque <node> *all_nodes_ptr,bool reassigning){ // use parent name attribute (mom/sire) to assign the actual parent node as pointer to the attribute mom_node/sire_node
     try{
-        if(reassigning==false){
-            if(node::name==(all_nodes_ptr->at(0)).get_name()||(node::name==(all_nodes_ptr->at(1)).get_name())){ // for imaginary nodes
+        if(reassigning==false){ // first pointer assignment (no reassigning)
+            if(node::name==(all_nodes_ptr->at(0)).get_name()||(node::name==(all_nodes_ptr->at(1)).get_name())){ // if node is an imaginary node -> set mom and sire also to imaginary nodes (pointing to itself)
                 node::mom_node = &(all_nodes_ptr->at(0));
                 node::sire_node = &(all_nodes_ptr->at(1));
             }
-            else{
-                for(int i = 0;node::mom_node==nullptr||node::sire_node==nullptr;i++){ // as long as one parent_node is a nullptr, try next i in all_nodes_ptr
-                    if((node::mom=="unknown"||node::mom=="unkn_f")&&(all_nodes_ptr->at(i)).get_name()=="unkn_f"){
+            else{ // if node is a pedigree individual
+                for(int i = 0;node::mom_node==nullptr||node::sire_node==nullptr;i++){ // iterate through all_nodes as long as one parent_node is a nullptr (unassigned)
+                    if((node::mom=="unknown"||node::mom=="unkn_f")&&(all_nodes_ptr->at(i)).get_name()=="unkn_f"){ // unknown mom (set pointer to unkn_f)
                         node::mom_node = &(all_nodes_ptr->at(i));
                         continue;
                     }
-                    if((all_nodes_ptr->at(i)).get_name()==node::mom){
+                    if((all_nodes_ptr->at(i)).get_name()==node::mom){ // if mom name and name of the current individual matches -> point from mom_node to indiv
                         node::mom_node = &(all_nodes_ptr->at(i));
                         continue;
                     }
-                    if((node::sire=="unknown"||node::sire=="unkn_m")&&(all_nodes_ptr->at(i)).get_name()=="unkn_m"){
+                    if((node::sire=="unknown"||node::sire=="unkn_m")&&(all_nodes_ptr->at(i)).get_name()=="unkn_m"){ //unknown sire (set pointer to unkn_m)
                         node::sire_node = &(all_nodes_ptr->at(i));
                         continue;
                     }
-                    if((all_nodes_ptr->at(i)).get_name()==node::sire){
+                    if((all_nodes_ptr->at(i)).get_name()==node::sire){ // if sire name and name of the current individual matches -> point from sire_node to indiv
                         node::sire_node = &(all_nodes_ptr->at(i));
                         continue;
                     }
                     if(i>=all_nodes_ptr->size()){
-                        cout << "ERROR. Not able to assign a sire_node as well as a mom_node pointer. please check."<<endl;
+                        throw std::runtime_error("Not able to assign sire_node/mom_node pointer");
                         break;
                     }
                 }
             }
-        }else{
-            if(node::name==(all_nodes_ptr->at(0)).get_name()||(node::name==(all_nodes_ptr->at(1)).get_name())){ // for imaginary nodes
+        }else{ // parent pointer already exist -> reassign
+            if(node::name==(all_nodes_ptr->at(0)).get_name()||(node::name==(all_nodes_ptr->at(1)).get_name())){ // if node is an imaginary node -> set mom and sire also to imaginary nodes (pointing to itself)
                 node::mom_node = &(all_nodes_ptr->at(0));
                 node::sire_node = &(all_nodes_ptr->at(1));
-            }else{
-                //cout << node::get_infos()<< "reassigning (mom = "<<node::mom_node->get_name()<<"): "<<node::mom_node << " --> ";
-                if(node::mom==all_nodes_ptr->at(0).get_name()){
+            }else{ //if node is a pedigree individual
+                if(node::mom==all_nodes_ptr->at(0).get_name()){ //unknown mom
                     node::mom_node = &(all_nodes_ptr->at(0));
-                }else if(node::mom_node != &(all_nodes_ptr->at(0)) && node::mom_node != nullptr){
+                }else if(node::mom_node != &(all_nodes_ptr->at(0)) && node::mom_node != nullptr){ // if mom name and name of the current individual matches (but mom pointer was assigned priorly) -> point from mom_node to indiv
                     node::mom_node = &(all_nodes_ptr->at(node::mom_node->get_matidx()));
                 }else{
-                    cout << "WARNING. No priorly assigned mom_node pointer. please check."<<endl;
+                    throw std::runtime_error("No priorly assigned mom_node pointer, even though mom != unkn_f");
                 }
-                //cout << node::mom_node<<" ("<<node::mom_node->get_name()<<")\nand (sire = "<<node::sire_node->get_name()<<"): "<<node::sire_node<<" --> ";
-                if(node::sire==all_nodes_ptr->at(1).get_name()){
+                if(node::sire==all_nodes_ptr->at(1).get_name()){ // unknown sire
                     node::sire_node = &(all_nodes_ptr->at(1));
-                }else if(node::sire_node != &(all_nodes_ptr->at(1)) && node::sire_node != nullptr){
+                }else if(node::sire_node != &(all_nodes_ptr->at(1)) && node::sire_node != nullptr){ // if sire name and name of the current individual matches (but sire pointer was assigned priorly) -> point from sire_node to indiv
                     node::sire_node = &(all_nodes_ptr->at(node::sire_node->get_matidx()));
                 }else{
-                    cout << "WARNING. No priorly assigned sire_node pointer. please check."<<endl;
+                    throw std::runtime_error("No priorly assigned sire_node pointer, even though sire != unkn_m");
                 }
-                //cout << node::sire_node<<" ("<<node::sire_node->get_name()<<indiv_1_idx")"<<endl;
             }  
         }
     }catch(const std::exception &ex) {

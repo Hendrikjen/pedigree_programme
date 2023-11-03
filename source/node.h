@@ -23,8 +23,8 @@ public:
     node(string name="NA", string sex="NA",string mom="NA",string sire="NA",string nonsires="NA",string nondams="NA",string DOB = "NA",string DOD = "NA",int birthseason=0,int matidx = 0);
     string get_sex();
     string get_name();
-    string get_mom();
-    string get_sire();
+    string get_mom(string unk = "unkn_f");
+    string get_sire(string unk = "unkn_m");
     string get_parent(string type);
     string get_real_mom();
     string get_real_sire();

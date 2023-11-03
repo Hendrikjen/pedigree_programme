@@ -1,6 +1,3 @@
-//#include <sstream>
-//#include <algorithm>
-//#include <tuple> 
 #include <chrono>
 #include <time.h>
 #include <cstdio>
@@ -28,7 +25,7 @@
 using namespace std::chrono; 
 namespace fs = std::filesystem;
 
-void display_help(){
+void display_help(){ // output of -h (command line argument help)
     cout << "\nCommand Line Arguments:\nPlease make sure to select a functionality (relatedness, simulation, or annealing) \nand to specify all required arguments for the respective function --> see info in \nsquare brackets for each argument: [r|-|o]\n  o = optional\n  r = required\n  - = not necessary/used)"<<endl;
     cout << "Format: \n  -argument_identifier <argument> [data type][relatedness|simulation|annealing]\n  + further explanation (options & default values)"<<endl;
     cout << "Example (required arguments): \n  ./pedigree_programme -f relatedness -p pedigree.txt \n  ./pedigree programme -f simulation -n 20 -s 10\n  ./pedigree programme -f annealing -p pedigree.txt -d dyads.txt\n\n -----------------------------------------------------------------------------\n"<<endl;
@@ -41,6 +38,8 @@ void display_help(){
     cout << "-g <gestation_length> [int][o|o|o]\n   options: gestation length in days\n   default: 200"<<endl;
     cout << "-h (without argument): display help"<<endl;
     cout << "-i <init_temp> [double][-|-|o]\n   options: start temperature \n   default: [empty] (automatically calculated)"<<endl;
+    cout << "-j <twins> [bool][o|o|o]\n   options \n     - true: twins are possible \n     - false: twins are not possible or that rare that potential mom \n       candidates can be excluded if the have already an offspring in the \n       respective birth cohort"<<endl;
+    cout << "-k <visualization> [bool][-|-|o]\n   options \n     - true: keep track of simulated annealing steps (the respective relatedness variance and if they are rejected) \n     - false: prior simulated annealing steps are not recorded/returned"<<endl;
     cout << "-l <generation_limit> [int][o|-|-]\n   options: restricts the distance to potential lowest common ancestors, \n            e.g. if generationlimit == 3, only paths up to the grandparent \n            generation will be returned, great-grand-parents will be considered as \n            unrelated\n   default: [empty] (no limitation; all ancestors of a focal will be \n            considered as potential lowest common ancestor)"<<endl;
     cout << "-m <maturation_age_m> [int][o|o|o]\n   options: maturation age of males in days\n   default: 1250"<<endl;
     cout << "-n <start_individual> [int][-|r|-]: number of individuals at the start of the \n   simulation"<<endl;
@@ -55,7 +54,9 @@ void display_help(){
     cout << "-x <temp_decay> [double][-|-|o]\n   options: the temperature multiplication factor to determine the number of \n            iterations \n   default: 0.99"<<endl;
     cout << "-y <default_year> [int][-|o|-]\n   options: start year for population simulation\n   default: 1900\n";
 }
+
 int main(int argc, char *argv[]) {
+    // initialization and setting of default values
     auto start = high_resolution_clock::now();
     std::chrono::steady_clock::time_point init_main_start = std::chrono::steady_clock::now();
     int option;
@@ -76,6 +77,8 @@ int main(int argc, char *argv[]) {
     double stop_temp = 1; 
     double temp_decay = 0.99; 
     bool reduce_node_space = false;
+    bool twins = false;
+    bool visualization = true;
 
     if (argc == 2 && std::string(argv[1]) == "-h") {
         display_help();
@@ -84,7 +87,7 @@ int main(int argc, char *argv[]) {
         std::cout << "Version 1.0.0" << std::endl;
         return 0;
     }
-    while ((option = getopt(argc, argv, "a:b:c:d:e:f:g:h:i:l:m:n:o:p:q:r:s:t:v:w:x:y:z:")) != -1) {
+    while ((option = getopt(argc, argv, "a:b:c:d:e:f:g:i:j:k:l:m:n:o:p:q:r:s:t:w:x:y:z:")) != -1) {
         switch (option) {
             case 'f':
                 functionality = optarg;
@@ -109,6 +112,15 @@ int main(int argc, char *argv[]) {
                 break;
             case 'w':
                 maturation_age_f = stoi(optarg); 
+                break;
+            case 'j':
+                if(optarg == "true"){
+                    twins = true;
+                }else if(optarg == "false"){
+                    twins = false;
+                }else{
+                    cerr << "Invalid twins argument. Please choose 'true' or 'false' (default = false)"<<endl;
+                }
                 break;
             case 'l':
                 generation_limit = stoi(optarg);
@@ -143,6 +155,15 @@ int main(int argc, char *argv[]) {
             case 'x':
                 temp_decay = stod(optarg);
                 break;
+            case 'k':
+                if(optarg == "true"){
+                    visualization = true;
+                }else if(optarg == "false"){
+                    visualization = false;
+                }else{
+                    cerr << "Invalid visualization argument. Please choose 'true' or 'false' (default = true)"<<endl;
+                }
+                break;
             case 'r':
                 if(optarg == "true"){
                     reduce_node_space = true;
@@ -152,30 +173,30 @@ int main(int argc, char *argv[]) {
                     cerr << "Invalid reduce_node_space argument. Please choose 'true' or 'false' (default = false)"<<endl;
                 }
                 break;
-            case 'h':
-                display_help();
-                return 0;
             default:
                 std::cerr << "Invalid argument. Please check the documentation for available options, clarification and the required data types." << endl;
                 return 1;
         }
     }
 
-    if(functionality == "relatedness") {
+    if(functionality == "relatedness") { // start relatedness calculation (check if all required arguments are given)
         if (input_pedigree.empty()) {
             cerr << "Missing argument for relatedness calculation. Please add '-p [path to pedigree file.txt]'" << endl;
             return 1;
-        }else{
+        }else if(input_pedigree.length()>=4 && input_pedigree.substr(input_pedigree.length() - 4) == ".txt"){
             cout << "start relatedness calculation"<<endl;
             if(output.empty()){
                 output = str_split(input_pedigree,".txt")[0];
             }
             if(input_dyadlist.empty()){
-                input_dyadlist = "";
+                input_dyadlist = "NA";
             }
-            pip_forward(input_pedigree,output,input_dyadlist,maturation_age_f,maturation_age_m,gestation_length,output_extend,generation_limit,cores,reduce_node_space);
+            relatedness_calculation(input_pedigree,output,input_dyadlist,maturation_age_f,maturation_age_m,gestation_length,twins,output_extend,generation_limit,cores,reduce_node_space);
+        }else{
+            cerr << "please use a .txt file as input pedigree and dyad selection"<<endl;
+            return 1;
         }
-    }else if(functionality == "simulation"){
+    }else if(functionality == "simulation"){ // start population simulation (check if all required arguments are given)
         if(simulation_duration < 0 || start_individuals < 0){
             cerr << "Missing argument for population simulation. Please make sure '-s [simulation_duration]' and  '-n [number of start individuals]' are called correctly." << endl;
             return 1;
@@ -186,15 +207,24 @@ int main(int argc, char *argv[]) {
             }
             population_simulation(simulation_duration,start_individuals,gestation_length,maturation_age_f,maturation_age_m,max_age,default_year,output,birth_rate,death_rate);
         }
-    }else if(functionality == "annealing"){
+    }else if(functionality == "annealing"){ // start simulated annealing (check if all required arguments are given)
         if(input_pedigree.empty() || input_dyadlist.empty()){
             cerr << "Missing argument for simulated annealing. Please make sure '-p [input_pedigree]' and  '-d [dyadlist with realized relatedness values]' are called correctly." << endl;
             return 1;
+        }else if(input_pedigree.length()>=4 && input_pedigree.substr(input_pedigree.length() - 4) == ".txt"){
+            cerr << "please use a .txt file as input pedigree"<<endl;
+            return 1;
+        }else if(input_dyadlist.length()>=4 && input_dyadlist.substr(input_dyadlist.length() - 4) == ".txt"){
+            cerr << "please use a .txt file as input dyad data"<<endl;
+            return 1;
         }else{
+            if(output.empty()){
+                output = str_split(input_pedigree,".txt")[0];
+            }
             cout << "start simulated annealing"<<endl;
+            simulated_annealing(input_pedigree,input_dyadlist,output,init_temp,stop_temp,temp_decay,cores,maturation_age_f,maturation_age_m,gestation_length,twins,visualization);
         }
     }else{
-
         cerr << "No assigned task. Please make sure '-f [relatedness|simulation|annealing]' is called correctly." << endl;
         return 1;
     }
@@ -204,44 +234,3 @@ int main(int argc, char *argv[]) {
     cout << "\n\n####################### finished after ... #######################\n--> "<< duration_cast<microseconds>(stop - start).count()<< " microseconds\n--> "<< duration_cast<milliseconds>(stop - start).count()<< " milliseconds\n--> "<< duration_cast<seconds>(stop - start).count()<< " seconds\n--> "<< duration_cast<minutes>(stop - start).count()<< " minutes\n";
     return 0;
 }
-
-    //string working_directory = fs::current_path().generic_string() + "/";
-
-    // PART ONE: relatedness coefficient calculation based on rhesus macaque pedigree (Cayo Santiago population) >> real pedigree with gaps
-    //pip_forward(working_directory+"pedigree_since_1986_plus_parents",maturation_age_f,maturation_age_m,gestation_length,"full",generation_limit,true,n_cores);
-    //pip_forward(working_directory+"pedigree_since_1986_plus_parents_complete_unk",maturation_age_f,maturation_age_m,gestation_length,"full",generation_limit,true,n_cores);
-    //pip_forward(working_directory+"mini_example_git",maturation_age_f,maturation_age_m,gestation_length,"full",generation_limit);
-    
-    // PART TWO: simulated annealing
-    /*string pedigree_full = working_directory+"pedigree_since_1986_plus_parents_complete_unk";//"popfile_simulation_3y_5s";//
-    string pedigree_gaps = working_directory+"pedigree_since_1986_plus_parents";//"popfile_simulation_3y_5s_gaps";//
-    string dyadlist = working_directory+"pedigree_since_1986_plus_parents_all_dyads";//"popfile_simulation_3y_5s_all_dyads";//
-
-    std::deque <dyad> all_dyads={};
-    std::deque<int> subset_idx = {};
-    std::deque <node> all_nodes = {};
-    std::map<string, int> dyad_dict = {};
-    auto init_main = std::chrono::duration_cast<std::chrono::nanoseconds> (std::chrono::steady_clock::now() - init_main_start).count();
-    cout << "init_main = " << init_main << "[ns]" << std::endl;
-    std::chrono::steady_clock::time_point load_data_start = std::chrono::steady_clock::now();
-    load_data_for_sim_annealing(pedigree_full,pedigree_gaps,&all_dyads,&subset_idx,&all_nodes,&dyad_dict,maturation_age_f,maturation_age_m,gestation_length,dyadlist);
-    set_parent_pool(&all_nodes,maturation_age_m,maturation_age_f,gestation_length);
-    auto load_data_main = std::chrono::duration_cast<std::chrono::nanoseconds> (std::chrono::steady_clock::now() - load_data_start).count();
-    cout << "load_data_main = " << load_data_main << "[ns]" << std::endl;
-    cout << "dyad size: "<<all_dyads.size()<<", subset: "<<subset_idx.size()<<endl;
-    double init_temp = 0; // start temperature
-    double stop_temp = 1; // stopping temperature
-    double temp_decay = 0.9999992916945; // 0.9995factor to reduce temperature (0.945 -> 123 runs per annealing; )
-    
-    simulated_annealing_complete_pedigree(init_temp,stop_temp,temp_decay,&all_nodes,&all_dyads,&subset_idx,gestation_length,maturation_age_f,maturation_age_m,default_year,pedigree_full,true,true,n_cores);
-
-    cout << "init_main = " << init_main << "[ns]" << std::endl;
-    cout << "load_data_main = " << load_data_main << "[ns]" << std::endl;
-    
-    cout << "\nn_nodes: "<<all_nodes.size()<<endl;
-    cout << "n_dyads: "<<all_dyads.size()<<endl;
-    cout << "n_relevant_dyads: "<<subset_idx.size()<<endl;
-    */
-
-
-
