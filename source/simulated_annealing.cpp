@@ -62,12 +62,11 @@ double load_data_for_sim_annealing(string file_gaps, string file_dyads, std::deq
         cout << "load dyad data"<<endl;
         double normalize_factor = 0; // sum of all realized relatedness values
         std::deque<int> dyads_with_erroneous_r_values = {};
-        ifstream data_dyads(file_dyads); // load dyadic information (gap_r & real_r)
+        ifstream data_dyads(file_dyads); // load dyad information which belongs to pedigree with gaps -> gap r values // please ensure a complete dyad_list with all dyads of interest (from WGS)
         if (! data_dyads) {
             throw std::runtime_error("Unable to open file '"+file_dyads+"' to load dyad information");
         }
         int dl_count = 0;
-        ifstream data_dyads(file_dyads);// load dyad information which belongs to pedigree with gaps -> gap r values // please ensure a complete dyad_list with all dyads of interest (from WGS)
         while(data_dyads>>indiv1>>indiv2>>r_value>>real_r){
             dyad x(indiv1,indiv2);
             if(r_value>=0 && r_value<=1){
@@ -349,7 +348,7 @@ void simulated_annealing(string input_pedigree,string input_dyadlist,string outp
                     if(i==(cores-1)){
                         dyads_end = subset_changed_indivs.size();
                     }
-                    thread th1(fill_pure_f_matrix,&all_dyads,&subset_changed_indivs,&all_nodes,&new_nodes,&f_mat_new, full_ped, dyads_start, dyads_end,cores>1,cores>1, i+1); // calculate their new relatedness coeffiecient r (after vs. before gap filling)
+                    thread th1(fill_pure_f_matrix,&all_dyads,&subset_changed_indivs,&all_nodes,&new_nodes,&f_mat_new, full_ped, dyads_start, dyads_end,cores>1, i+1); // calculate their new relatedness coeffiecient r (after vs. before gap filling)
                     threads.push_back(std::move(th1));
                 }
                 for(int i = 0;i<threads.size();i++){ // wait for all threads to finish

@@ -28,7 +28,7 @@ namespace fs = std::filesystem;
 void display_help(){ // output of -h (command line argument help)
     cout << "\nCommand Line Arguments:\nPlease make sure to select a functionality (relatedness, simulation, or annealing) \nand to specify all required arguments for the respective function --> see info in \nsquare brackets for each argument: [r|-|o]\n  o = optional\n  r = required\n  - = not necessary/used)"<<endl;
     cout << "Format: \n  -argument_identifier <argument> [data type][relatedness|simulation|annealing]\n  + further explanation (options & default values)"<<endl;
-    cout << "Example (required arguments): \n  ./pedigree_programme -f relatedness -p pedigree.txt \n  ./pedigree programme -f simulation -n 20 -s 10\n  ./pedigree programme -f annealing -p pedigree.txt -d dyads.txt\n\n -----------------------------------------------------------------------------\n"<<endl;
+    cout << "Example (required arguments): \n  ./pedigree_programme -f relatedness -p pedigree.txt \n  ./pedigree programme -f simulation -n 20 -s 10\n  ./pedigree programme -f annealing -p pedigree.txt -d dyads.txt\n\n-----------------------------------------------------------------------------\n"<<endl;
     cout << "-a <max_age> [int][-|o|-]\n   options: age maximum in population (individuals who reach the maximum age \n            will decease in the following year)\n   default: 200"<<endl;
     cout << "-b <birth_rate> [double][-|o|-]\n   options: specifies the annual increment in the number of offsprings born \n            each year during the population simulation\n   default: 4.0"<<endl;
     cout << "-c <cores> [int][o|-|o]\n   options: number of cores for multiprocessing\n   default: 1 (no multiprocessing)"<<endl;
@@ -39,7 +39,7 @@ void display_help(){ // output of -h (command line argument help)
     cout << "-h (without argument): display help"<<endl;
     cout << "-i <init_temp> [double][-|-|o]\n   options: start temperature \n   default: [empty] (automatically calculated)"<<endl;
     cout << "-j <twins> [bool][o|o|o]\n   options \n     - true: twins are possible \n     - false: twins are not possible or that rare that potential mom \n       candidates can be excluded if the have already an offspring in the \n       respective birth cohort"<<endl;
-    cout << "-k <visualization> [bool][-|-|o]\n   options \n     - true: keep track of simulated annealing steps (the respective relatedness variance and if they are rejected) \n     - false: prior simulated annealing steps are not recorded/returned"<<endl;
+    cout << "-k <visualization> [bool][-|-|o]\n   options \n     - true: keep track of simulated annealing steps (the respective \n       relatedness variance and if they are rejected) \n     - false: prior simulated annealing steps are not recorded/returned"<<endl;
     cout << "-l <generation_limit> [int][o|-|-]\n   options: restricts the distance to potential lowest common ancestors, \n            e.g. if generationlimit == 3, only paths up to the grandparent \n            generation will be returned, great-grand-parents will be considered as \n            unrelated\n   default: [empty] (no limitation; all ancestors of a focal will be \n            considered as potential lowest common ancestor)"<<endl;
     cout << "-m <maturation_age_m> [int][o|o|o]\n   options: maturation age of males in days\n   default: 1250"<<endl;
     cout << "-n <start_individual> [int][-|r|-]: number of individuals at the start of the \n   simulation"<<endl;
