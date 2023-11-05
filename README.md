@@ -2,7 +2,7 @@
 
 [xxx] is a pedigree analysis tool which was developed and implemented as part of a bioinformatic's master thesis in 2023 at Leipzig University. It is a C++ written console application which was designed to calculate dyadic relatedness coefficients from a given pedigree without being limited by the number of considered generations, the number of individuals, or the depth and incompleteness of the pedigree itself. Additionally, the programme provides some further informations about the respective relatedness paths between the focal individuals, for instance the name and sex of ancestors along the path, the lowest common ancestors, the kinlabel, or the minimal  detectable inbreeding value for each individual. The functionality and accuracy was adequately tested with multiple simulated populations as well as with a real pedigree of over 12 000 rhesus macaques from Cayo Santiago.
 
-Since behavioural ecologists often have to deal with incomplete pedigree, due to unknown sires, the second part of the programme focus on an implementation of an adapted simulated annealing algorithm to find the best fully-reconstructed pedigree solution based on realized relatedness values obtained from whole genome sequencing. Eventually, it aims to provide a pedigree without gaps for which the difference between the provided realized relatedness values and the simultaneously calculated pedigree-derived relatedness coeffiecients is minimal over all dyads (see more informations in the section _Implementation/Simulated annealing_)
+Since behavioural ecologists often have to deal with incomplete pedigree, due to unknown sires, the second part of the programme focus on an implementation of an adapted simulated annealing algorithm to find the best fully-reconstructed pedigree solution based on realized relatedness values obtained from whole genome sequencing. Eventually, it aims to provide a pedigree without gaps for which the difference between the given realized relatedness values and the simultaneously calculated pedigree-derived relatedness coeffiecients is minimal over all dyads (see more informations in the section _Implementation/Simulated annealing_)
 
 ## Getting Started
 <details>
@@ -97,7 +97,7 @@ functionality == annealing</summary>
   - **default**: 1 (no multiprocessing)
 - `-i <init_temp>` [double]
   - **options**: start temperature 
-  - **default**: [empty] (automatically calculated by $init_factor (= highest mean relatedness of an individual) * n_{nodes} * 1.5$)
+  - **default**: [empty] (automatically calculated by $\text{init factor (= highest mean relatedness of an individual}) \cdot n_{nodes} \cdot 1.5$
 - `-k <visualization>` [bool]
   - **options**: 
     - _true_: keep track of simulated annealing steps (the respective relatedness variance and if they are rejected) 
