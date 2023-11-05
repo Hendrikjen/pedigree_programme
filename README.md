@@ -191,7 +191,7 @@ functionality == annealing</summary>
 |nonsire |string| NA|IDs of previously excluded sires strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential sire within the pedigree, else the individual will be assumed to be a founder individual
 |nondam |string| NA|IDs of previously excluded moms strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential mother within the pedigree, else the individual will be assumed to be a founder individual|
 
-- [example](example/example_input_pedigree.txt)
+- [example](example/population_simulation/example_simulation.txt)
 
 #### Dyad Information
 - Input file format: .txt (tab-separated) 
@@ -322,6 +322,7 @@ https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showi
 
 examplary output of a simulated pedigree with 20 founder individuals born/start in 1950, simulated for 10 years: [simulated pedigree](example/population_simulation/example_simulation.txt) and the respective list of [dyadic relatedness coefficients](example/population_simulation/example_simulation_dyadic_paths.txt) for all 117 individual (1442 dyads)
 - created with: `./pedigree_programme -f simulation -n 20 -s 10 -y 1950 -o ../example/population_simulation/example_simulation`
+
 </details>
 <details>
 <summary>Simulated Annealing</summary>
@@ -331,6 +332,12 @@ examplary simulated annealing based on the simulated pedigree above
 - [complete pedigree](example/population_simulation/example_simulation.txt): file from population simulation
 - [dyads](example/simulated_annealing/example_simulation_dyads.txt): combined list of relatedness coefficients for each dyad, (1) from incomplete pedigree and (2) from complete pedigree with added recombination noise
 - simulated annealing started with `.\pedigree_programme -f annealing -p ..\example\simulated_annealing\example_simulation_incomplete.txt -d ..\example\simulated_annealing\example_simulation_dyads.txt -o ..\example\simulated_annealing\example_annealing_output -z ..\example\population_simulation\example_simulation.txt -x 0.999`
+- output files: [final pedigree solution](example/simulated_annealing/example_annealing_output_annealed.txt) after simulated annealing, [start solution pedigree](example/simulated_annealing/example_annealing_output_start_solution.txt) (randomly filled pedigree) and [visualization data](example/simulated_annealing/example_annealing_output_visualization.txt)
+- simulated annealing assigned 39/43 gaps (90.7%) correctly (time: 1 minute, iterations: 2665) and reduced so the relatedness discrepancy from 321 to 96 (-70%), see simulated annealing graph (plotted with visualization data):
+<p align="center">
+  <img src="example/simulated_annealing/R_difference_decrease.jpeg" width="350">
+</p>
+
 </details>
 
 ## Implementation
