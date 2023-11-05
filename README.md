@@ -109,6 +109,9 @@ functionality == annealing</summary>
 - `-x <temp_decay>` [double]
   - **options**: the temperature multiplication factor to determine the number of iterations (if the number of iteration _n_ is set, the decay factor can be calculated with temp_decay = $\sqrt[n]{\frac{t_{stop}}{t_{init}}} $
   - **default**: 0.99
+- `-z <complete_pedigree>` [string]
+  - **options**: path to complete pedigree if full known pedigree exists (with all gaps correctly filled) and if it should be used to evaluate accuracy of simulated annealing output
+  - **default**: [empty] (no comparison whether gaps are correctly filled in the end of the simulated annealing)
 
 #### Example
 `./pedigree_programme -f annealing -p pedigree_with_gaps.txt -d realized_dyadic_relatedness.txt -x 0.995 -c 5 -m 1000 -w 1000`
@@ -168,7 +171,9 @@ functionality == annealing</summary>
 </details>
 <details>
 <summary>Simulated Annealing</summary>
-#### Pedigree
+
+#### Pedigree (complete and incomplete)
+
 - Input file format: .txt (tab-separated)
 - no header
 - empty NA values (like "") lead to adverse behaviour or programme abort
@@ -197,7 +202,7 @@ functionality == annealing</summary>
   - ID names have to be unique and have to be unambiguously assignable to pedigree IDs; every focal ID has to be listed in the pedigree separately; ID names like _UNK_, _NA_, _unknown_, _unkn_f_, and _unkn_m_ have to be avoided
   - pedigree_r: dyadic relatedness coefficient from the incomplete pedigree; no NA values possible
   - real_r: realized relatedness values of the dyad, obtained for instance from shared IBD segments; no NA values possible
-- [example](example/example_input_dyad_data.txt)
+- [example](example/example_simulation_dyads.txt)
 </details>
 
 ## Example
@@ -315,11 +320,17 @@ https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showi
 <details>
 <summary>Population Simulation</summary>
 
-examplary output of a simulated pedigree with 20 founder individuals born/start in 1950, simulated for 10 years: [simulated pedigree](example/population_simulation/example_simulation.txt) and the respective list of [dyadic relatedness coefficients](example/population_simulation/example_simulation_dyadic_paths.txt) for all 1442 individuals.
+examplary output of a simulated pedigree with 20 founder individuals born/start in 1950, simulated for 10 years: [simulated pedigree](example/population_simulation/example_simulation.txt) and the respective list of [dyadic relatedness coefficients](example/population_simulation/example_simulation_dyadic_paths.txt) for all 117 individual (1442 dyads)
+- created with: `./pedigree_programme -f simulation -n 20 -s 10 -y 1950 -o ../example/population_simulation/example_simulation`
 </details>
 <details>
 <summary>Simulated Annealing</summary>
-  ...
+
+examplary simulated annealing based on the simulated pedigree above
+- [incomplete pedigree](example/simulated_annealing/example_simulation_incomplete.txt): randomly added paternal gap with a probability of 50% in all descendants of the simulated population
+- [complete pedigree](example/population_simulation/example_simulation.txt): file from population simulation
+- [dyads](example/simulated_annealing/example_simulation_dyads.txt): combined list of relatedness coefficients for each dyad, (1) from incomplete pedigree and (2) from complete pedigree with added recombination noise
+- simulated annealing started with `.\pedigree_programme -f annealing -p ..\example\simulated_annealing\example_simulation_incomplete.txt -d ..\example\simulated_annealing\example_simulation_dyads.txt -o ..\example\simulated_annealing\example_annealing_output -z ..\example\population_simulation\example_simulation.txt -x 0.999`
 </details>
 
 ## Implementation
