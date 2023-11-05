@@ -53,7 +53,7 @@ double load_data_for_sim_annealing(string file_gaps, string file_dyads, std::deq
             }
             data_full.close(); 
         }
-        cout << "create parents pointer"<<endl;
+        cout << "create parent pointers"<<endl;
         for(int i = 0;i<all_nodes_ptr->size();i++){ 
             all_nodes_ptr->at(i).create_parent_ptr(all_nodes_ptr);
         }
@@ -82,6 +82,7 @@ double load_data_for_sim_annealing(string file_gaps, string file_dyads, std::deq
             }
             dyad_dict_ptr->insert({dyad_name,dl_count});
             all_dyads_ptr->push_back(x);
+            subset_idx_ptr->push_back(dl_count);
             dl_count += 1;
         }
         data_dyads.close(); 
@@ -100,6 +101,9 @@ double load_data_for_sim_annealing(string file_gaps, string file_dyads, std::deq
             }
         }
         cout << total_diff<<"/"<< subset_idx_ptr->size()<<" dyads show a discrepancy in r (mean: "<<sum_diff/total_diff<<", max: "<<max_diff<<")"<<endl;
+        if(subset_idx_ptr->size()==0){
+            throw std::runtime_error("zero dyads to analyze - potential error while loading dyad data; please check input requirements.");
+        }
         return normalize_factor;
     }catch(const std::exception &ex) {
         std::cerr << "Error in load_data_for_sim_annealing(): " << ex.what() << std::endl;

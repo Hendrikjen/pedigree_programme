@@ -53,6 +53,7 @@ void display_help(){ // output of -h (command line argument help)
     cout << "-w <maturation_age_f> [int][o|o|o]\n   options: maturation age of females in days\n   default: 1095"<<endl;
     cout << "-x <temp_decay> [double][-|-|o]\n   options: the temperature multiplication factor to determine the number of \n            iterations \n   default: 0.99"<<endl;
     cout << "-y <default_year> [int][-|o|-]\n   options: start year for population simulation\n   default: 1900\n";
+    cout << "-z <complete_pedigree> [string][-|-|o]\n   options: path to complete pedigree if full known pedigree exists (with \n            all gaps correctly filled) and if it should be used to evaluate accuracy \n            of simulated annealing output\n   default: [empty] (no comparison whether gaps are correctly filled in \n            the end of the simulated annealing)"<<endl;
 }
 
 int main(int argc, char *argv[]) {
@@ -60,7 +61,7 @@ int main(int argc, char *argv[]) {
     auto start = high_resolution_clock::now();
     std::chrono::steady_clock::time_point init_main_start = std::chrono::steady_clock::now();
     int option;
-    string functionality, input_pedigree, input_dyadlist,output;
+    string functionality, input_pedigree, input_dyadlist,output,complete_pedigree;
     string output_extend = "full";
     int gestation_length = 200;
     int maturation_age_f = 1095;
@@ -173,6 +174,9 @@ int main(int argc, char *argv[]) {
                     cerr << "Invalid reduce_node_space argument. Please choose 'true' or 'false' (default = false)"<<endl;
                 }
                 break;
+            case 'z':
+                complete_pedigree = optarg;
+                break;
             default:
                 std::cerr << "Invalid argument. Please check the documentation for available options, clarification and the required data types." << endl;
                 return 1;
@@ -211,18 +215,21 @@ int main(int argc, char *argv[]) {
         if(input_pedigree.empty() || input_dyadlist.empty()){
             cerr << "Missing argument for simulated annealing. Please make sure '-p [input_pedigree]' and  '-d [dyadlist with realized relatedness values]' are called correctly." << endl;
             return 1;
-        }else if(input_pedigree.length()>=4 && input_pedigree.substr(input_pedigree.length() - 4) == ".txt"){
+        }else if((input_pedigree.length()>=4 && input_pedigree.substr(input_pedigree.length() - 4) == ".txt")==false){
             cerr << "please use a .txt file as input pedigree"<<endl;
             return 1;
-        }else if(input_dyadlist.length()>=4 && input_dyadlist.substr(input_dyadlist.length() - 4) == ".txt"){
+        }else if((input_dyadlist.length()>=4 && input_dyadlist.substr(input_dyadlist.length() - 4) == ".txt")==false){
             cerr << "please use a .txt file as input dyad data"<<endl;
             return 1;
         }else{
             if(output.empty()){
                 output = str_split(input_pedigree,".txt")[0];
             }
+            if(complete_pedigree.empty()){
+                complete_pedigree = "NA";
+            }
             cout << "start simulated annealing"<<endl;
-            simulated_annealing(input_pedigree,input_dyadlist,output,init_temp,stop_temp,temp_decay,cores,maturation_age_f,maturation_age_m,gestation_length,twins,visualization);
+            simulated_annealing(input_pedigree,input_dyadlist,output,init_temp,stop_temp,temp_decay,cores,maturation_age_f,maturation_age_m,gestation_length,twins,visualization,complete_pedigree);
         }
     }else{
         cerr << "No assigned task. Please make sure '-f [relatedness|simulation|annealing]' is called correctly." << endl;
