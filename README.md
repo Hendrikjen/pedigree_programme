@@ -139,9 +139,8 @@ functionality == annealing</summary>
 
 ## Input requirements
 <details>
-<summary>Relatedness calculation</summary>
+<summary>Pedigree files</summary>
 
-#### Pedigree
 - Input file format: .txt (tab-separated)
 - no header
 - empty NA values (like "") lead to adverse behaviour or programme abort
@@ -159,41 +158,21 @@ functionality == annealing</summary>
 |nonsire |string| NA|IDs of previously excluded sires strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential sire within the pedigree, else the individual will be assumed to be a founder individual
 |nondam |string| NA|IDs of previously excluded moms strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential mother within the pedigree, else the individual will be assumed to be a founder individual|
 
-- [example](example/relatedness_calculation/example_input_pedigree.txt)
+- [example 1](example/relatedness_calculation/example_input_pedigree.txt) or [example 2](example/population_simulation/example_simulation.txt)
 
-#### Dyad Selection
+</details>
+<details>
+<summary>Dyadic files</summary>
+
+#### Dyad Selection (Relatedness Calculation)
 - Input file format: .txt (tab-separated) 
 - no header
 - empty NA values (like "") lead to adverse behaviour or programme abort
 - columns (order and format is mandatory): ID_1, ID_2
   - ID names have to be unique and have to be unambiguously assignable to pedigree IDs; every focal ID has to be listed in the pedigree separately; ID names like _UNK_, _NA_, _unknown_, _unkn_f_, and _unkn_m_ have to be avoided
 - [example](example/relatedness_calculation/example_input_dyad_selection.txt)
-</details>
-<details>
-<summary>Simulated Annealing</summary>
 
-#### Pedigree (complete and incomplete)
-
-- Input file format: .txt (tab-separated)
-- no header
-- empty NA values (like "") lead to adverse behaviour or programme abort
-- columns (order and format is mandatory): ID, sex, birthseason/year, mom_ID, sire_ID, day of birth (DOB), day of death (DOD), nonsire, nondam
-
-|column|data type|missing value|comment|
-|-|-|-|-|
-|ID |string| ID names like _UNK_, _NA_, _unknown_, _unkn_f_, and _unkn_m_ have to be avoided|ID names have to be unique and have to be unambiguously assignable to parent IDs; every parent ID from mom_ID or sire_ID has to be listed in the pedigree separately
-|sex |char| u| usage of the following options only _f_ = female, _m_ = male, or _u_ = unknown sex
-|birthseason |int|0| year
-|mom_ID |string|unknown| have to be relatable to exactly one ID, respectively one female individual in the pedigree
-|sire_ID |string|unknown| have to be relatable to exactly one ID, respectively one male individual in the pedigree
-|DOB |string (dateformat)| NA| in the format: 01-01-1900
-|DOD |string (dateformat)|NA| in the format: 01-01-1900
-|nonsire |string| NA|IDs of previously excluded sires strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential sire within the pedigree, else the individual will be assumed to be a founder individual
-|nondam |string| NA|IDs of previously excluded moms strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential mother within the pedigree, else the individual will be assumed to be a founder individual|
-
-- [example](example/population_simulation/example_simulation.txt)
-
-#### Dyad Information
+#### Dyadic relatedness information (Simulated Annealing: realized and pedigree-derived r values)
 - Input file format: .txt (tab-separated) 
 - no header
 - empty NA values (like "") lead to adverse behaviour or programme abort
