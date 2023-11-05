@@ -159,7 +159,7 @@ functionality == annealing</summary>
 |nonsire |string| NA|IDs of previously excluded sires strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential sire within the pedigree, else the individual will be assumed to be a founder individual
 |nondam |string| NA|IDs of previously excluded moms strung together (have to be relatable to exactly one ID of the respective sex in the pedigree); separated by @ e.g. _indiv1@indiv2@indiv3_; ensure that each individual has at least one remaining potential mother within the pedigree, else the individual will be assumed to be a founder individual|
 
-- [example](example/example_input_pedigree.txt)
+- [example](example/relatedness_calculation/example_input_pedigree.txt)
 
 #### Dyad Selection
 - Input file format: .txt (tab-separated) 
@@ -167,7 +167,7 @@ functionality == annealing</summary>
 - empty NA values (like "") lead to adverse behaviour or programme abort
 - columns (order and format is mandatory): ID_1, ID_2
   - ID names have to be unique and have to be unambiguously assignable to pedigree IDs; every focal ID has to be listed in the pedigree separately; ID names like _UNK_, _NA_, _unknown_, _unkn_f_, and _unkn_m_ have to be avoided
-- [example](example/example_input_dyad_selection.txt)
+- [example](example/relatedness_calculation/example_input_dyad_selection.txt)
 </details>
 <details>
 <summary>Simulated Annealing</summary>
@@ -209,7 +209,7 @@ functionality == annealing</summary>
 <details>
 <summary>Relatedness calculation</summary>
 <p align="center">
-  <img src="example/mini_example_git.png" width="300">
+  <img src="example/relatedness_calculation/mini_example_git.png" width="300">
 </p>
 <details>
 <summary>Input/Output files</summary>
@@ -233,7 +233,7 @@ functionality == annealing</summary>
 |K|m|1928|H|G|01-01-1928|NA|NA|NA|
 |L|f|1929|H|I|01-01-1929|NA|NA|NA|
 
-[example_input_pedigree.txt](example/example_input_pedigree.txt) 
+[example_input_pedigree.txt](example/relatedness_calculation/example_input_pedigree.txt) 
 </details>
 
 <details>
@@ -250,7 +250,7 @@ functionality == annealing</summary>
 |D|G|
 |D|J|
 
-[example_input_dyad_selection.txt](example/example_input_dyad_selection.txt) 
+[example_input_dyad_selection.txt](example/relatedness_calculation/example_input_dyad_selection.txt) 
 </details>
 
 <details>
@@ -272,7 +272,7 @@ functionality == annealing</summary>
 |K|m|1928|H|G|1-1-1928|0-0-0|NA|NA|2|0.031250000000000|
 |L|f|1929|H|I|1-1-1929|0-0-0|NA|NA|3|0.031250000000000|
 
-[example_output_pedigree_info.txt](example/example_output_pedigree_info.txt)
+[example_output_pedigree_info.txt](example/relatedness_calculation/example_output_pedigree_info.txt)
 </details>
 <details>
 <summary> Output file (dyadlist): path characteristics
@@ -288,7 +288,7 @@ functionality == annealing</summary>
 |D|G|D_G|0.125000000000000|D@A@B@G|fffm|mat|A|1/2|nephew&aunt|half|1|
 |D|J|D_J|0.125000000000000|D@A@E@J|fffm|mat|A|1/2|nephew&aunt|half|1|
 
-[example_output_dyadlist.txt](example/example_output_dyadlist.txt)
+[example_output_dyadlist.txt](example/relatedness_calculation/example_output_dyadlist.txt)
 </details>
 </details>
 
