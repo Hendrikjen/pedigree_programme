@@ -11,7 +11,6 @@
 #include <iomanip>
 #include <random>
 #include <fstream>
-#include <filesystem>
 
 #include "node.h"
 #include "dyad.h"
@@ -20,7 +19,6 @@
 #include "relatedness_calculation.h"
 
 using namespace std; 
-namespace fs = std::filesystem;
 
 double randomnumber();
 double load_data_for_sim_annealing(string file_gaps, string file_dyads,std::deque<dyad>*all_dyads_ptr,std::deque<int>*subset_idx_ptr, std::deque<node>*all_nodes_ptr,map<string, int> *dyad_dict_ptr,int maturation_age_f,int maturation_age_m,int gestation_length,string file_full = "NA");
