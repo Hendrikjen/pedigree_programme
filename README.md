@@ -12,6 +12,11 @@ Since behavioural ecologists often have to deal with incomplete pedigree, due to
 - after downloading the source code, open the command line and navigate within the terminal into the folder _pedigree_programme/source/_
   - you can check with `ls` if you are in the correct folder if there are multiple Headerfiles (.h) and the respective source code files (.cpp) as well as _main.cpp_ and the makefile _makefile_pedigree_programme_
 - run in the command line `make -f makefile_pedigree_programme`
+  - if you have trouble with make on windows :_'make' is not recognized as an internal or external command, operable program or batch file._
+    - either download [Cygwin](https://www.cygwin.com/install.html), use the setup exe to install _make_ and _gcc/g++_, move the programme folder to Cygwin and run the command in the Cygwin Terminal
+    <!-- Cygwin Setup Installation Tutorial Youtube by C Plus+: https://www.youtube.com/watch?v=2ypfJZ6YuVo -->
+    - or install [MinGW](https://sourceforge.net/projects/mingw/files/Installer/mingw-get-setup.exe/download), set a new environment variable to the bin folder of mingw, install make by `mingw-get install mingw32-make` or the MinGW Interface (started by `mingw-get`) and use the command `mingw32-make -f makefile_pedigree_programme` instead
+  <!-- MinGW Setup Installation Tutorial Youtube by PascalLandau: https://www.youtube.com/watch?v=taCJhnBXG_w-->
 - use the command `./pedigree_programme` to start the programme (depending on what you want to do, you have to add further arguments after the command)
 - for general information you can type `./pedigree_programme -h`to list all possible command line arguments, or `./pedigree_programme -v` to get the current version
 </details>
