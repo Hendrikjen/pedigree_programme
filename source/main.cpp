@@ -6,7 +6,6 @@
 #include <iomanip>
 #include <deque>
 #include <string>
-#include <filesystem>
 #include <cmath>
 #include <thread>
 #include <getopt.h>
@@ -23,7 +22,6 @@
 #include "simulated_annealing.h"
 
 using namespace std::chrono; 
-namespace fs = std::filesystem;
 
 void display_help(){ // output of -h (command line argument help)
     cout << "\nCommand Line Arguments:\nPlease make sure to select a functionality (relatedness, simulation, or annealing) \nand to specify all required arguments for the respective function --> see info in \nsquare brackets for each argument: [r|-|o]\n  o = optional\n  r = required\n  - = not necessary/used)"<<endl;
