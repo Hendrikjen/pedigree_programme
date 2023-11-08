@@ -3,6 +3,14 @@ message: "If you use this software, please cite it as below."
 authors:
 - family-names: "Westphal"
   given-names: "Hendrikje"
+- family-names: "Freudiger"
+  given-names: "Annika"
+- family-names: "Gatter"
+  given-names: "Thomas"
+- family-names: "Stadler"
+  given-names: "Peter"
+- family-names: "Widdig"
+  given-names: "Anja"
 title: "Pedigree programme"
 version: 1.0.0
 date-released: 2023-10-17
