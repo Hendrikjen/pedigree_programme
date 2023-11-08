@@ -1,23 +1,23 @@
 # pedigree programme
 
-[xxx] is a pedigree analysis tool which was developed and implemented as part of a bioinformatic's master thesis in 2023 at Leipzig University. It is a C++ written console application which was designed to calculate dyadic relatedness coefficients from a given pedigree without being limited by the number of considered generations, the number of individuals, or the depth and incompleteness of the pedigree itself. Additionally, the programme provides some further informations about the respective relatedness paths between the focal individuals, for instance the name and sex of ancestors along the path, the lowest common ancestors, the kinlabel, or the minimal  detectable inbreeding value for each individual. The functionality and accuracy was adequately tested with multiple simulated populations as well as with a real pedigree of over 12 000 rhesus macaques from Cayo Santiago.
+[xxx] is a pedigree analysis tool which was developed and implemented as part of a bioinformatic's master thesis in 2023 at Leipzig University. It is a C++ written console application, which was designed to calculate dyadic relatedness coefficients from a given pedigree without being limited by the number of considered generations, the number of individuals, or the depth and incompleteness of the pedigree itself. Additionally, the programme provides some further information about the respective relatedness paths between the focal individuals, such as the name and sex of ancestors along the path, the lowest common ancestors, the kinlabel, or the minimal detectable inbreeding value for each individual. The functionality and accuracy was adequately tested with multiple simulated populations as well as with a real pedigree of over 12 000 rhesus macaques from the free-ranging population on Cayo Santiago, Puerto Rico (Widdig et al. 2017).
 
-Since behavioural ecologists often have to deal with incomplete pedigree, due to unknown sires, the second part of the programme focus on an implementation of an adapted simulated annealing algorithm to find the best fully-reconstructed pedigree solution based on realized relatedness values obtained from whole genome sequencing. Eventually, it aims to provide a pedigree without gaps for which the difference between the given realized relatedness values and the simultaneously calculated pedigree-derived relatedness coeffiecients is minimal over all dyads (see more informations in the section _Implementation/Simulated annealing_)
+Since scientists working on wild populations often have to deal with incomplete pedigrees (e.g. due to unknown sires), the second part of the programme focuses on an implementation of an adapted simulated annealing algorithm to find the best fully-reconstructed pedigree solution based on realized relatedness values, obtained from whole genome sequencing data or sets of single nucleotide polymorphisms (Li et al. 2014; Wang et al. 2017). Eventually, it aims to provide a pedigree without gaps for which the difference between the given realized relatedness values and the simultaneously calculated pedigree-derived relatedness coeffiecients is minimal over all dyads (see more informations in the section _Implementation/Simulated annealing_)
 
 ## Getting Started
 <details>
 <summary>Installation guide</summary>
   
-- to get the programme, download (and don't forget to unzip) the repository to your local filesystem
+- download (and don't forget to unzip) the repository to your local filesystem
 - after downloading the source code, open the command line and navigate within the terminal into the folder _pedigree_programme/source/_
-  - you can check with `ls` if you are in the correct folder if there are multiple Headerfiles (.h) and the respective source code files (.cpp) as well as _main.cpp_ and the makefile _makefile_pedigree_programme_
+  - you can check with `ls` if you are in the correct folder if there are multiple headerfiles (.h) and the respective source code files (.cpp) as well as _main.cpp_ and the makefile _makefile_pedigree_programme_
 - run in the command line `make -f makefile_pedigree_programme`
-  - if you have trouble with make on windows :_'make' is not recognized as an internal or external command, operable program or batch file._
+  - if you have trouble with make on windows:_'make' is not recognized as an internal or external command, operable programme or batch file._
     - either download [Cygwin](https://www.cygwin.com/install.html), use the setup exe to install _make_ and _gcc/g++_, move the programme folder to Cygwin and run the command in the Cygwin Terminal
     <!-- Cygwin Setup Installation Tutorial Youtube by C Plus+: https://www.youtube.com/watch?v=2ypfJZ6YuVo -->
     - or install [MinGW](https://sourceforge.net/projects/mingw/files/Installer/mingw-get-setup.exe/download), set a new environment variable to the bin folder of mingw, install make by `mingw-get install mingw32-make` or the MinGW Interface (started by `mingw-get`) and use the command `mingw32-make -f makefile_pedigree_programme` instead
   <!-- MinGW Setup Installation Tutorial Youtube by PascalLandau: https://www.youtube.com/watch?v=taCJhnBXG_w-->
-- use the command `./pedigree_programme` to start the programme (depending on what you want to do, you have to add further arguments after the command)
+- now you can use the command `./pedigree_programme` to start the programme 
 - for general information you can type `./pedigree_programme -h`to list all possible command line arguments, or `./pedigree_programme -v` to get the current version
 </details>
 
@@ -70,11 +70,11 @@ functionality == simulation</summary>
 
 #### required arguments
 - `-n <start_individual>` [int]: number of individuals at the start of the simulation
-- `-s <simulation_duration>` [int]: number of years to restrict the duration of the simulation
+- `-s <simulation_duration>` [int]: number of years considered in pedigree to restrict the duration of the simulation
 
 #### optional arguments
 - `-a <max_age>` [int]
-  - **options**: age maximum in population (individuals who reach the maximum age will decease in the following year)
+  - **options**: species-/population specific age maximum (individuals who reach the maximum age will decease in the following year)
   - **default**: 200
 - `-b <birth_rate>` [double]
   - **options**: specifies the annual increment in the number of offsprings born each year during the population simulation
@@ -348,7 +348,7 @@ Based on these functions, the programme computes the relatedness between a dyad 
 
 #### Adapted Simulated Annealing Algorithm [^1]
 
-Within the programme a simulated annealing algorithm is implemented to fill possibly existing gaps within a given pedigree. Therefor, it uses the discrepancy between user-provided realized relatedness values (for instance obtained from whole genome sequencing) and the calculated pedigree-derived relatedness values as cost function. While trying to minimize the cost/discrepancy by simulated annealing, the aim is to find the pedigree solution which explains best the variance, especially in case of missing ancestors which can be accompanied with an underestimation of relatedness values. 
+Within the programme a simulated annealing algorithm is implemented to fill possibly existing gaps within a given pedigree. Therefore, it uses the discrepancy between user-provided realized relatedness values (e.g. obtained from whole genome sequencing) and the calculated pedigree-derived relatedness values as cost function. While trying to minimize the cost/discrepancy by simulated annealing, the aim is to find the pedigree solution which explains best the variance, especially in case of missing ancestors which can be accompanied with an underestimation of relatedness values. 
 $$F =\Sigma\ |f(x,y) - g(x,y) | \to min$$ (with $f(x,y)$ as the pedigree-based dyadic relatedness and $g(x,y)$ as the dyadic realized relatedness)
 To fit the specific problem, the general simulated annealing algorithm is adapted as explained in the following outline:
 
