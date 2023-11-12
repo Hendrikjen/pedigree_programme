@@ -423,7 +423,7 @@ void dyad::compute_path_characteristics(int generation_limit){ // set pathline, 
                         current_kinline = "unk";
                     }
                 }
-                if(generation_limit<0 || (stoi(str_split(current_depth,"/")[0]) < generation_limit && stoi(str_split(current_depth,"/")[1]) < generation_limit )){ // if required save only these path characteristics of paths within the given generation_limit (no generation limit == -1)
+                if(current_depth != "" && (generation_limit<0  ||(stoi(str_split(current_depth,"/")[0]) < generation_limit && stoi(str_split(current_depth,"/")[1]) < generation_limit ))){ // if required save only these path characteristics of paths within the given generation_limit (no generation limit == -1)
                     if(i<(dyad::paths.size()-1)){ //add current attribute to the previous attributes of the dyad, delimited by /@/
                         output_pathlines = output_pathlines + current_pathline + "/@/";
                         output_depths = output_depths + current_depth + "/@/";
