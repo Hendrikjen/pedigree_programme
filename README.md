@@ -1,13 +1,13 @@
-# pedigree programme
+ # pedigree programme
 
-[xxx] is a pedigree analysis tool which was developed and implemented as part of a bioinformatic's master thesis in 2023 at Leipzig University. It is a C++ written console application, which was designed to calculate dyadic relatedness coefficients from a given pedigree without being limited by the number of considered generations, the number of individuals, or the depth and incompleteness of the pedigree itself. Additionally, the programme provides some further information about the respective relatedness paths between the focal individuals, such as the name and sex of ancestors along the path, the lowest common ancestors, the kinlabel, or the minimal detectable inbreeding value for each individual. The functionality and accuracy was adequately tested with multiple simulated populations as well as with a real pedigree of over 12 000 rhesus macaques from the free-ranging population on Cayo Santiago, Puerto Rico (Widdig et al. 2017).
+The programme, described in the following, is a pedigree analysis tool, which was developed and implemented as part of a bioinformatic's master thesis in 2023 at Leipzig University. It is a C++ written console application, which was designed to calculate dyadic relatedness coefficients from a given pedigree without being limited by the number of considered generations, the number of individuals, or the depth and incompleteness of the pedigree itself. Additionally, the programme provides some further information about the respective relatedness paths between the focal individuals, such as the name and sex of ancestors along the path, the lowest common ancestors, the kinlabel, or the minimal detectable inbreeding value for each individual. The functionality and accuracy was adequately tested with multiple simulated populations as well as with a real pedigree of over 12 000 rhesus macaques from the free-ranging population on Cayo Santiago, Puerto Rico. [^1]
 
-Since scientists working on wild populations often have to deal with incomplete pedigrees (e.g. due to unknown sires), the second part of the programme focuses on an implementation of an adapted simulated annealing algorithm to find the best fully-reconstructed pedigree solution based on realized relatedness values, obtained from whole genome sequencing data or sets of single nucleotide polymorphisms (Li et al. 2014; Wang et al. 2017). Eventually, it aims to provide a pedigree without gaps for which the difference between the given realized relatedness values and the simultaneously calculated pedigree-derived relatedness coeffiecients is minimal over all dyads (see more informations in the section _Implementation/Simulated annealing_)
+Since scientists working on wild populations often have to deal with incomplete pedigrees (e.g. due to unknown sires), the second part of the programme focuses on an implementation of an adapted simulated annealing algorithm to find the best fully-reconstructed pedigree solution based on realized relatedness values, obtained from whole genome sequencing data or sets of single nucleotide polymorphisms. [^2] [^3] Eventually, it aims to provide a pedigree without gaps for which the difference between the given realized relatedness values and the simultaneously calculated pedigree-derived relatedness coeffiecients is minimal over all dyads (see more informations in the section _Implementation/Simulated annealing_)
 
 ## Getting Started
 <details>
 <summary>Installation guide</summary>
-  
+ 
 - download (and don't forget to unzip) the repository to your local filesystem
 - after downloading the source code, open the command line and navigate within the terminal into the folder _pedigree_programme/source/_
   - you can check with `ls` if you are in the correct folder if there are multiple headerfiles (.h) and the respective source code files (.cpp) as well as _main.cpp_ and the makefile _makefile_pedigree_programme_
@@ -17,7 +17,7 @@ Since scientists working on wild populations often have to deal with incomplete 
     <!-- Cygwin Setup Installation Tutorial Youtube by C Plus+: https://www.youtube.com/watch?v=2ypfJZ6YuVo -->
     - or install [MinGW](https://sourceforge.net/projects/mingw/files/Installer/mingw-get-setup.exe/download), set a new environment variable to the bin folder of mingw, install make by `mingw-get install mingw32-make` or the MinGW Interface (started by `mingw-get`) and use the command `mingw32-make -f makefile_pedigree_programme` instead
   <!-- MinGW Setup Installation Tutorial Youtube by PascalLandau: https://www.youtube.com/watch?v=taCJhnBXG_w-->
-- now you can use the command `./pedigree_programme` to start the programme 
+- now you can use the command `./pedigree_programme` to start the programme
 - for general information you can type `./pedigree_programme -h`to list all possible command line arguments, or `./pedigree_programme -v` to get the current version
 </details>
 
@@ -25,7 +25,7 @@ Since scientists working on wild populations often have to deal with incomplete 
 <summary>Command line arguments</summary>
 
 `-f <functionality>` [string]
-  - **options**: 
+  - **options**:
     - _relatedness_: calculates the dyadic relatedness (+ path characteristics) from a given pedigree
     - _simulation_: simulates a pedigree
     - _annealing_: starts a simulated annealing algorithm to fill the parental gaps within a pedigree based on realized relatedness values
@@ -56,7 +56,7 @@ functionality == relatedness</summary>
   - **options**: custom output name (prefix) e.g. if output == _programme_output_, the resulting output files will be named "programme_output_dyadlist.txt" and "programme_output_info.txt"
   - **default**: [empty] (the input file name will be used as prefix)
 - `-r <reduce_node_space>` [bool]
-  - **options**: 
+  - **options**:
     - _true_: before calculating the dyadic relatedness, the number of individuals will be reduced which means that only descendants of the focal's common ancestors will be considered in the analysis (it effectively reduces the search space without affecting the result, but might be only beneficial in almost completely reconstructed pedigrees with a long history due to the extra computational cost)
     - _false_: no prior narrowing of the search space
   - **default**: false
@@ -75,7 +75,7 @@ functionality == simulation</summary>
 #### optional arguments
 - `-a <max_age>` [int]
   - **options**: species-/population specific age maximum (individuals who reach the maximum age will decease in the following year)
-  - **default**: 200
+  - **default**: 30
 - `-b <birth_rate>` [double]
   - **options**: specifies the annual increment in the number of offsprings born each year during the population simulation
   - **default**: 4.0
@@ -101,11 +101,11 @@ functionality == annealing</summary>
   - **options**: number of cores for multiprocessing
   - **default**: 1 (no multiprocessing)
 - `-i <init_temp>` [double]
-  - **options**: start temperature 
-  - **default**: [empty] (automatically calculated by $\text{init factor (= highest mean relatedness of an individual}) \cdot n_{nodes} \cdot 1.5$
+  - **options**: start temperature
+  - **default**: [empty] (automatically calculated by $\text{start temperature = init factor (= highest mean relatedness of an individual}) \cdot n_{nodes} \cdot 1.5$
 - `-k <visualization>` [bool]
-  - **options**: 
-    - _true_: keep track of simulated annealing steps (the respective relatedness variance and if they are rejected) 
+  - **options**:
+    - _true_: keep track of simulated annealing steps (the respective relatedness variance and if they are rejected)
     - _false_: prior simulated annealing steps are not recorded/returned
   - **default**: true
 - `-t <stop_temp>` [double]
@@ -127,7 +127,7 @@ functionality == annealing</summary>
   - **options**: gestation length in days
   - **default**: 200
 - `-j <twins>` [bool]
-  - **options**: 
+  - **options**:
     - _true_: twins are possible
     - _false_: twins are not possible or rare to the point that potential mom candidates can be excluded if the have already an offspring in the respective birth cohort
   - **default**: false
@@ -170,7 +170,7 @@ functionality == annealing</summary>
 <summary>Dyadic files</summary>
 
 #### Dyad Selection (Relatedness Calculation)
-- Input file format: .txt (tab-separated) 
+- Input file format: .txt (tab-separated)
 - no header
 - empty NA values (like "") lead to adverse behaviour or programme abort
 - columns (order and format is mandatory): ID_1, ID_2
@@ -178,7 +178,7 @@ functionality == annealing</summary>
 - [example](example/relatedness_calculation/example_input_dyad_selection.txt)
 
 #### Dyadic relatedness information (Simulated Annealing: realized and pedigree-derived r values)
-- Input file format: .txt (tab-separated) 
+- Input file format: .txt (tab-separated)
 - no header
 - empty NA values (like "") lead to adverse behaviour or programme abort
 - only dyads listed within this file will be considered as relevant for minimizing the variance between the pedigree-derived relatedness coefficient and the realized realtedness value
@@ -195,12 +195,11 @@ functionality == annealing</summary>
 <p align="center">
   <img src="example/relatedness_calculation/mini_example_git.png" width="300">
 </p>
-<details>
-<summary>Input/Output files</summary>
 
 <details>
-<summary> Input file (pedigree)
-</summary>
+<summary>I. Input files</summary>
+
+#### Input file (pedigree)
 
 |ID|sex|birthseason|mom|sire|DOB|DOD|nonsire|nondam|
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -217,12 +216,10 @@ functionality == annealing</summary>
 |K|m|1928|H|G|01-01-1928|NA|NA|NA|
 |L|f|1929|H|I|01-01-1929|NA|NA|NA|
 
-[example_input_pedigree.txt](example/relatedness_calculation/example_input_pedigree.txt) 
-</details>
+[example_input_pedigree.txt](example/relatedness_calculation/example_input_pedigree.txt)
 
-<details>
-<summary> Input file (dyad selection)
-</summary>
+
+#### Input file (dyad selection)
 
 |ID_1|ID_2|
 | ------------- | ------------- |
@@ -234,12 +231,13 @@ functionality == annealing</summary>
 |D|G|
 |D|J|
 
-[example_input_dyad_selection.txt](example/relatedness_calculation/example_input_dyad_selection.txt) 
-</details>
+[example_input_dyad_selection.txt](example/relatedness_calculation/example_input_dyad_selection.txt)
 
+</details>
 <details>
-<summary> Output file (pedigree): additional pedigree info like generational depth and minimal inbreeding value
-</summary>
+<summary>II. Output files</summary>
+
+#### Output file (pedigree): additional pedigree info like generational depth and minimal inbreeding value
 
 |ID|sex|BS|mom|sire|DOB|DOD|pot_sire|pot_mom|full_generations|min_f|
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -257,10 +255,8 @@ functionality == annealing</summary>
 |L|f|1929|H|I|1-1-1929|0-0-0|NA|NA|3|0.031250000000000|
 
 [example_output_pedigree_info.txt](example/relatedness_calculation/example_output_pedigree_info.txt)
-</details>
-<details>
-<summary> Output file (dyadlist): path characteristics
-</summary>
+
+#### Output file (dyadlist): path characteristics
 
 |ID 1|ID 2|dyad|relatedness coefficient|paths|pathline|kinline|LCA|depth|kinlabel|fullhalf|min_DGD|
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -274,12 +270,12 @@ functionality == annealing</summary>
 
 [example_output_dyadlist.txt](example/relatedness_calculation/example_output_dyadlist.txt)
 </details>
-</details>
-
 <details>
-<summary>Output explanation (path characteristics)</summary>
+<summary> III. Output explanation (path characteristics)</summary>
 
 To further explain the column in the dyadlist output, we will look on the examplary dyad (E_G) from the pedigree example above. The focal individuals E (circle = female) and G (square = male) are related only by maternal ancestors (kinline = mat), whereby the lowest common ancestor A is one edge apart from E and two from G (depth = 1/2) which codes in combination with the sex for the kinlabel nephew/aunt. Each focal has at least one unknown parent, therefore the min DGD is 1.
+
+<sub><sup>The following table is an excerpt from the Master's thesis by Hendrikje Westphal, submitted in December 2023 at Leipzig University, Germany</sup></sub>
 
 |name | explanation | example |
 | ------------- | ------------- | ------------- |
@@ -298,9 +294,13 @@ To further explain the column in the dyadlist output, we will look on the exampl
 
 https://upload.wikimedia.org/wikipedia/commons/0/0d/Table_of_Consanguinity_showing_degrees_of_relationship.svg
 </p>
-  
+ 
 </details>
+
+##
+
 </details>
+
 <details>
 <summary>Population Simulation</summary>
 
@@ -328,17 +328,19 @@ examplary simulated annealing based on the simulated pedigree above
 <details>
 <summary>Relatedness Coefficient</summary>
 
-#### Recursive relatedness coefficient calculation [^1]
+#### Recursive relatedness coefficient calculation
+
+<sub><sup>The following paragraphs and formulas are an excerpt from the Master's thesis by Hendrikje Westphal, submitted in December 2023 at Leipzig University, Germany</sup></sub>
 
 To calculate the dyadic relatedness coefficient, the pedigree G is conceived as as a directed, acyclic graph, consisting of two distinct classes of vertices, $V_1$ (males) and $V_2$ (females) whereas each vertex represents an individual. Edges within the graph referred to one-directional, direct kinship bonds between parent and offspring, which implies that for each (heterogamous) node at least two edges exist (to the mother and to the father), or more in case of own offspring. But while in reality, pedigrees often consists of missing parents, two imaginary nodes $\rho_1\ \epsilon\ V_1$ and $\rho_2\ \epsilon\ V_2$ are added, serving as a compensatory substitute for unknown mothers or sires.
 
-Generally, the relatedness coefficient of an individual $x\ \epsilon\ V$ to itself is stated as $f\left(x,x\right)=1$ while the relatedness of two different focals $f\left(x,y\right)$ can be expressed by the following recursive formula 
-$$f\left(x,y\right)=\ \frac{1}{4}\left[f\left(x_1,y_1\right)+f\left(x_1,y_2\right)+f\left(x_2,y_1\right)+f(x_2,y_2)\right]$$ ($x_1,\ x_2$ as parents of $x$; $y_1,\ y_2$ as parents of $y$ while $x_1,\ y_1\ \epsilon\ V_1$ and $x_2,\ y_2\ \epsilon\ V_2$). 
+Generally, the relatedness coefficient of an individual $x\ \epsilon\ V$ to itself is stated as $f\left(x,x\right)=1$ while the relatedness of two different focals $f\left(x,y\right)$ can be expressed by the following recursive formula
+$$f\left(x,y\right)=\ \frac{1}{4}\left[f\left(x_1,y_1\right)+f\left(x_1,y_2\right)+f\left(x_2,y_1\right)+f(x_2,y_2)\right]$$ ($x_1,\ x_2$ as parents of $x$; $y_1,\ y_2$ as parents of $y$ while $x_1,\ y_1\ \epsilon\ V_1$ and $x_2,\ y_2\ \epsilon\ V_2$).
 In the particular case of determining the relatedness coefficient between an individual $x$ and its ancestor $x_i$, it is calculated by
 $$f\left(x,x_i\right)=\ \frac{1}{2}\left[f\left(x_1,x_i\right)+f\left(x_2,x_i\right)\right]$$
-($x,\ x_i\ \epsilon\ V;\ x_1\ \epsilon\ V_1$ and $x_2\ \epsilon\ V_2$ as parents of $x$). Even more specific, if $x_i \equiv x_1 \lor x_2$, the relatedness between parent and offspring is given by 
+($x,\ x_i\ \epsilon\ V;\ x_1\ \epsilon\ V_1$ and $x_2\ \epsilon\ V_2$ as parents of $x$). Even more specific, if $x_i \equiv x_1 \lor x_2$, the relatedness between parent and offspring is given by
 $$f\left(x,x_1\right)=\ \frac{1}{2}\left[1+f\left(x_1,x_2\right)\right]$$
-At last, in case of imaginary nodes, $\rho_1$ and $\rho_2$ are assumed as unrelated to each other or any other individual $x\ \epsilon\ V:$ 
+At last, in case of imaginary nodes, $\rho_1$ and $\rho_2$ are assumed as unrelated to each other or any other individual $x\ \epsilon\ V:$
 $$f\left(\rho_1,\rho_2\right)=f\left(x,\rho_1\right)=f\left(x,\rho_2\right)=0$$
 Based on these functions, the programme computes the relatedness between a dyad step by step until it either identifies their lowest common ancestor or terminates due to a trivial solution.
 </details>
@@ -346,9 +348,10 @@ Based on these functions, the programme computes the relatedness between a dyad 
 <details>
 <summary>Simulated Annealing </summary>
 
-#### Adapted Simulated Annealing Algorithm [^1]
+#### Adapted Simulated Annealing Algorithm 
+<sub><sup>The following synapsis is an excerpt from the Master's thesis by Hendrikje Westphal, submitted in December 2023 at Leipzig University, Germany</sup></sub>
 
-Within the programme a simulated annealing algorithm is implemented to fill possibly existing gaps within a given pedigree. Therefore, it uses the discrepancy between user-provided realized relatedness values (e.g. obtained from whole genome sequencing) and the calculated pedigree-derived relatedness values as cost function. While trying to minimize the cost/discrepancy by simulated annealing, the aim is to find the pedigree solution which explains best the variance, especially in case of missing ancestors which can be accompanied with an underestimation of relatedness values. 
+Within the programme a simulated annealing algorithm is implemented to fill possibly existing gaps within a given pedigree. Therefore, it uses the discrepancy between user-provided realized relatedness values (e.g. obtained from whole genome sequencing) and the calculated pedigree-derived relatedness values as cost function. While trying to minimize the cost/discrepancy by simulated annealing, the aim is to find the pedigree solution which explains best the variance, especially in case of missing ancestors which can be accompanied with an underestimation of relatedness values.
 $$F =\Sigma\ |f(x,y) - g(x,y) | \to min$$ (with $f(x,y)$ as the pedigree-based dyadic relatedness and $g(x,y)$ as the dyadic realized relatedness)
 To fit the specific problem, the general simulated annealing algorithm is adapted as explained in the following outline:
 
@@ -361,25 +364,26 @@ To fit the specific problem, the general simulated annealing algorithm is adapte
   - Create a new solution by exchanging one potential parent with another suitable candidate.
   - Calculate new relatedness values for dyads affected by this change (all relevant dyads which include the offspring, the old and the new parent candidate).
   - Compare the old and new relatedness values to determine the discrepancy between the current and the new solution.
-  - If the new solution is worse, apply the Metropolis acceptance criterion to decide whether to accept it or not: $$e^\frac{F_{n}-F_{c}}{T} > X\to [0,1]$$ 
+  - If the new solution is worse, apply the Metropolis acceptance criterion to decide whether to accept it or not: $$e^\frac{F_{n}-F_{c}}{T} > X\to [0,1]$$
  (with $F_n$ as fitness function of the new solution and $F_c$ of the current solution; $T$ as temperature and $X$ as random number in the range between 0 and 1)
   - If accepted (or the new solution is better in the first place), the new solution becomes the current solution; otherwise, it's rejected, and the previous solution remains in place.
   - If necessary, update the best difference and pedigree.
 - Finally, save the last pedigree solution in a file.
 
-
 </details>
 
 ## Contribution and citation
-I want to thank and express my deep gratitude to all people who contributed to this project and who never failed to come up with helpful recommandations, fresh ideas and new perspectives. Especially, the unconditional support, encouragement and guidance of my supervisors A. Freudiger, T. Gatter, P. Stadler and A. Widdig was essential for bringing this project to a successful end. 
+We want to thank and express our deep gratitude to all people who supported and contributed to this project, with special thanks to R. McElreath und P. Fröhlich for the provided server space and comprehensive IT support.
 
-Please use the BibTex format, provided by Github or cite this programme as 
+Please use the BibTex format, provided by Github or cite this programme as
 
-**Westphal, H. (2023). Pedigree programme (Version 1.0.0) [Computer software].** _https://github.com/Hendrikjen/pedigree_programme_
+**Westphal et al. (2023). Pedigree programme (Version 1.0.0) [Computer software].** _https://github.com/Hendrikjen/pedigree_programme_
 
-Further background information may be found in my [master thesis](master%20thesis/MA_Assessing-dyadic-relatedness-in-rhesus-macaques-using-pedigree-data_HWestphal_2023.pdf).
+Contact email: hendrikje.westphal@gmx.de
 
-Contact email: hw53vake@studserv.uni-leipzig.de
 
-[^1]: Westphal, H. (2023). Assessing dyadic relatedness in rhesus macaques using pedigree data [Master thesis]. [_https://github.com/Hendrikjen/pedigree_programme/master thesis/MA_Assessing-dyadic-relatedness-in-rhesus-macaques-using-pedigree-data_HWestphal_2023.pdf_](master%20thesis/MA_Assessing-dyadic-relatedness-in-rhesus-macaques-using-pedigree-data_HWestphal_2023.pdf)
- 
+[^1]: Widdig, A., Muniz, L., Minkner, M., Barth, Y., Bley, S., Ruiz-Lambides, A., ... & Kulik, L. (2017). Low incidence of inbreeding in a long-lived primate population isolated for 75 years. Behavioral ecology and sociobiology, 71, 1-15. [https://doi.org/10.1007/s00265-016-2236-6](https://doi.org/10.1007/s00265-016-2236-6)
+
+[^2]: Wang, B., Sverdlov, S., & Thompson, E. (2017). Efficient estimation of realized kinship from single nucleotide polymorphism genotypes. Genetics, 205(3), 1063-1078. [https://doi.org/10.1534/genetics.116.197004](https://doi.org/10.1534/genetics.116.197004)
+
+[^3]: Li, H., Glusman, G., Hu, H., Caballero, J., Hubley, R., Witherspoon, D., ... & Huff, C. D. (2014). Relationship estimation from whole-genome sequence data. PLoS genetics, 10(1), e1004144. [https://doi.org/10.1371/journal.pgen.1004144](https://doi.org/10.1371/journal.pgen.1004144)
