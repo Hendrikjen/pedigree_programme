@@ -275,7 +275,7 @@ functionality == annealing</summary>
 
 To further explain the column in the dyadlist output, we will look on the examplary dyad (E_G) from the pedigree example above. The focal individuals E (circle = female) and G (square = male) are related only by maternal ancestors (kinline = mat), whereby the lowest common ancestor A is one edge apart from E and two from G (depth = 1/2) which codes in combination with the sex for the kinlabel nephew/aunt. Each focal has at least one unknown parent, therefore the min DGD is 1.
 
-<sub><sup>The following table is an excerpt from the Master's thesis by Hendrikje Westphal, submitted in December 2023 at Leipzig University, Germany</sup></sub>
+> <sub><sup>The following table is an excerpt from the Master's thesis by Hendrikje Westphal, submitted in December 2023 at Leipzig University, Germany</sup></sub>
 
 |name | explanation | example |
 | ------------- | ------------- | ------------- |
@@ -330,7 +330,7 @@ examplary simulated annealing based on the simulated pedigree above
 
 #### Recursive relatedness coefficient calculation
 
-<sub><sup>The following paragraphs and formulas are an excerpt from the Master's thesis by Hendrikje Westphal, submitted in December 2023 at Leipzig University, Germany</sup></sub>
+> <sub><sup>The following paragraphs and formulas are an excerpt from the Master's thesis by Hendrikje Westphal, submitted in December 2023 at Leipzig University, Germany</sup></sub>
 
 To calculate the dyadic relatedness coefficient, the pedigree G is conceived as as a directed, acyclic graph, consisting of two distinct classes of vertices, $V_1$ (males) and $V_2$ (females) whereas each vertex represents an individual. Edges within the graph referred to one-directional, direct kinship bonds between parent and offspring, which implies that for each (heterogamous) node at least two edges exist (to the mother and to the father), or more in case of own offspring. But while in reality, pedigrees often consists of missing parents, two imaginary nodes $\rho_1\ \epsilon\ V_1$ and $\rho_2\ \epsilon\ V_2$ are added, serving as a compensatory substitute for unknown mothers or sires.
 
@@ -349,7 +349,7 @@ Based on these functions, the programme computes the relatedness between a dyad 
 <summary>Simulated Annealing </summary>
 
 #### Adapted Simulated Annealing Algorithm 
-<sub><sup>The following synapsis is an excerpt from the Master's thesis by Hendrikje Westphal, submitted in December 2023 at Leipzig University, Germany</sup></sub>
+> <sub><sup>The following synapsis is an excerpt from the Master's thesis by Hendrikje Westphal, submitted in December 2023 at Leipzig University, Germany</sup></sub>
 
 Within the programme a simulated annealing algorithm is implemented to fill possibly existing gaps within a given pedigree. Therefore, it uses the discrepancy between user-provided realized relatedness values (e.g. obtained from whole genome sequencing) and the calculated pedigree-derived relatedness values as cost function. While trying to minimize the cost/discrepancy by simulated annealing, the aim is to find the pedigree solution which explains best the variance, especially in case of missing ancestors which can be accompanied with an underestimation of relatedness values.
 $$F =\Sigma\ |f(x,y) - g(x,y) | \to min$$ (with $f(x,y)$ as the pedigree-based dyadic relatedness and $g(x,y)$ as the dyadic realized relatedness)
