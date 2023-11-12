@@ -23,7 +23,7 @@ double calculate_f_xy(node * indiv_1,node * indiv_2,std::deque<std::deque<double
 void fill_f_matrix(std::deque<std::deque<double>> *f_matrix,int ncol, int nrow,std::deque <node> *all_nodes_ptr,std::deque <dyad> *all_dyads_ptr,map<string,int>*dyad_dict_ptr,bool reduce_node_space = false,bool multithreading = false, int dyads_start = 0,int dyads_end = 0,int thread = 0);
 void add_missing_parent_nodes(std::deque<node>*all_nodes_ptr,std::string all_node_names_str,std::deque<string>*mom_names_ptr,std::deque<string>*sire_names_ptr);
 string all_nodes_info_file(std::deque <node> *all_nodes_ptr,std::map<string,int> * dyad_dict,std::deque<dyad>* all_dyads_ptr, string filename);
-void write_dyad_list(std::deque <dyad> *all_dyads_ptr,std::deque<std::deque<double>> &f_mat,int ncol,string filename, string write_dyadlist = "full");
+void write_dyad_list(std::deque <dyad> *all_dyads_ptr,std::deque<std::deque<double>> &f_mat,int ncol,string filename, string write_dyadlist,int generation_limit);
 void set_min_f(std::deque<std::deque<double>> &f_matrix,std::deque<dyad>*all_dyads_ptr,std::deque<node>*all_nodes_ptr);
 void set_all_min_DGD(std::deque<node>*all_nodes_ptr, std::deque<dyad>*all_dyads_ptr);
 void relatedness_calculation(string file,string output_file,string input_dyadlist,int maturation_age_f,int maturation_age_m,int gestation_length,bool twins,string write_dyadlist,int generation_limit = -1,int n_cores = 1,bool reduce_node_space_tf = false);

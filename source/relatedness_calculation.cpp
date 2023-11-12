@@ -243,7 +243,7 @@ string all_nodes_info_file(std::deque <node> *all_nodes_ptr,std::map<string,int>
         return "unable to write nodes info file";
     }
 }
-void write_dyad_list(std::deque <dyad> *all_dyads_ptr,std::deque<std::deque<double>> &f_mat,int ncol,string filename, string write_dyadlist){// writes given dyads and their information into output file
+void write_dyad_list(std::deque <dyad> *all_dyads_ptr,std::deque<std::deque<double>> &f_mat,int ncol,string filename, string write_dyadlist,int generation_limit){// writes given dyads and their information into output file
     try{
         ofstream out; 
         out.open(filename+"_dyad_list.txt"); 
@@ -252,7 +252,7 @@ void write_dyad_list(std::deque <dyad> *all_dyads_ptr,std::deque<std::deque<doub
             if(x >= 0 && y >= 0){
                 all_dyads_ptr->at(i).set_r_value(f_mat[x][y]); // set r value as attribute
                 if(write_dyadlist == "full"){ // write all information into file
-                    out <<setprecision(15)<< all_dyads_ptr->at(i).get_dyad_infos();
+                    out <<setprecision(15)<< all_dyads_ptr->at(i).get_dyad_infos(generation_limit);
                 }else if (write_dyadlist == "reduced"){ // write only r value and dyadname into output file
                     out << setprecision(15)<<all_dyads_ptr->at(i).get_dyad_name() << "\t"<<all_dyads_ptr->at(i).get_r_value()<<endl;
                 }
@@ -429,7 +429,7 @@ void relatedness_calculation(string file,string output_file,string input_dyadlis
         set_parent_pool(&all_nodes,maturation_age_m,maturation_age_f,gestation_length,twins); //parent pool as node attribute
         set_all_min_DGD(&all_nodes,&all_dyads); //minimal completely known generations as dyad attribute
         set_min_f(f_mat,&all_dyads,&all_nodes); //minimal inbreeding value as node attribute
-        write_dyad_list(&all_dyads,f_mat,ncol,output_file,write_dyadlist); // save relatedness & path characteristics in output file
+        write_dyad_list(&all_dyads,f_mat,ncol,output_file,write_dyadlist,generation_limit); // save relatedness & path characteristics in output file
         all_nodes_info_file(&all_nodes,&dyad_dict,&all_dyads,output_file+"_info");// save pedigree with extra information in additional output file 
     }catch(const std::exception &ex) {
         std::cerr << "Error in relatedness_calculation(): " << ex.what() << std::endl;

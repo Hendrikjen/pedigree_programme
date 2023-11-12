@@ -273,6 +273,9 @@ void simulated_annealing(string input_pedigree,string input_dyadlist,string outp
         
         if(init_temp<stop_temp){ // if no user-defined initial temperature is given, calculate an appropiate init_temp
             init_temp = get_init_temp_factor(f_mat_orig,&all_nodes)*all_nodes.size()*1.5;
+            if(init_temp < stop_temp){
+                throw std::runtime_error("Unable to compute start temperature automatically (pedigree is to small so that start temperature < stop temperature). Please choose start temperature manually by command line argument '-i'");
+            }
         }else{
             cout << "calculated init_temp (but not used): "<<get_init_temp_factor(f_mat_orig,&all_nodes)*all_nodes.size()*1.5<<endl;
         }

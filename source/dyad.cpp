@@ -72,29 +72,48 @@ std::deque <deque <node*>>* dyad::get_paths_ptr(){
 std::deque <string>* dyad::get_path_characteristics_ptr(){
     return &(dyad::path_characteristics);
 }
-string dyad::get_depths(){
-    if(dyad::path_characteristics.empty()){
-        dyad::compute_path_characteristics();
-    }
-    return dyad::path_characteristics.at(3);
+void limit_path_characteristics_to_genealogical_depth(int generation){
+    
 }
-string dyad::get_common_ancs(){
+string dyad::get_depths(int generation_limit){
     if(dyad::path_characteristics.empty()){
-        dyad::compute_path_characteristics();
+        dyad::compute_path_characteristics(generation_limit);
     }
-    return dyad::path_characteristics.at(2);
+    if((dyad::path_characteristics.at(3).length()>3)&&(dyad::path_characteristics.at(3).substr(dyad::path_characteristics.at(3).length() - 3) == "/@/")){
+        return dyad::path_characteristics.at(3).substr(0, dyad::path_characteristics.at(3).length() - 3);
+    }else{
+        return dyad::path_characteristics.at(3);
+    }
 }
-string dyad::get_kinlines(){
+string dyad::get_common_ancs(int generation_limit){
     if(dyad::path_characteristics.empty()){
-        dyad::compute_path_characteristics();
+        dyad::compute_path_characteristics(generation_limit);
     }
-    return dyad::path_characteristics.at(1);
+    if((dyad::path_characteristics.at(2).length()>3)&&(dyad::path_characteristics.at(2).substr(dyad::path_characteristics.at(2).length() - 3) == "/@/")){
+        return dyad::path_characteristics.at(2).substr(0, dyad::path_characteristics.at(2).length() - 3);
+    }else{
+        return dyad::path_characteristics.at(2);
+    }
 }
-string dyad::get_pathlines(){
+string dyad::get_kinlines(int generation_limit){
     if(dyad::path_characteristics.empty()){
-        dyad::compute_path_characteristics();
+        dyad::compute_path_characteristics(generation_limit);
     }
-    return dyad::path_characteristics.at(0);
+    if((dyad::path_characteristics.at(1).length()>3)&&(dyad::path_characteristics.at(1).substr(dyad::path_characteristics.at(1).length() - 3) == "/@/")){
+        return dyad::path_characteristics.at(1).substr(0, dyad::path_characteristics.at(1).length() - 3);
+    }else{
+        return dyad::path_characteristics.at(1);
+    }
+}
+string dyad::get_pathlines(int generation_limit){
+    if(dyad::path_characteristics.empty()){
+        dyad::compute_path_characteristics(generation_limit);
+    }
+    if((dyad::path_characteristics.at(0).length()>3)&&(dyad::path_characteristics.at(0).substr(dyad::path_characteristics.at(0).length() - 3) == "/@/")){
+        return dyad::path_characteristics.at(0).substr(0, dyad::path_characteristics.at(0).length() - 3);
+    }else{
+        return dyad::path_characteristics.at(0);
+    }
 }
 string dyad::get_path_str(){
     return dyad::path_str;
@@ -143,14 +162,14 @@ string dyad::print_paths(){ // generates a string representation of paths (A,B a
         return "unable to print path";
     }
 }
-string dyad::get_kinlabel(){ // generates kinlabel based on depth & sex
+string dyad::get_kinlabel(int generation_limit){ // generates kinlabel based on depth & sex
     try{
         if(dyad::path_characteristics.empty()){
-            dyad::compute_path_characteristics(); // ensure path characteristics were calculation previously
+            dyad::compute_path_characteristics(generation_limit); // ensure path characteristics were calculation previously
         }
         if(!dyad::paths.empty() && dyad::paths[0].size()>0){ // if paths to analyze exist
             string kinlabel = ""; // to collect all final kinlabels
-            std::deque <string> depths = str_split(dyad::get_depths(),"/@/");
+            std::deque <string> depths = str_split(dyad::get_depths(generation_limit),"/@/");
             std::deque <string> grand_counter = {"grand","great","parent","child","mother","daughter","father","son","parsib","nibling","aunt","niece","uncle","nephew","sister","brother"};
             std::deque <string> cousin_counter = {"1st","2nd","3rd","th"};
             std::deque <string> removed_counter = {"once","twice","thrice","times"};
@@ -234,7 +253,7 @@ string dyad::get_kinlabel(){ // generates kinlabel based on depth & sex
                         }else{
                             current_kinlabel = current_kinlabel + grand_counter[counter[0]] + "|" + current_kinlabel + grand_counter[counter[1]];
                         }
-                         
+                        
                     }
                 }else{
                     if(depth_1==depth_2) { // if focals are cousins (unreduced)
@@ -341,9 +360,10 @@ string dyad::get_full_half(std::deque<std::deque<node*>> paths, string kinlabel_
         return "unable to get full/half";
     }
 }
-void dyad::compute_path_characteristics(){ // set pathline, kinline, lowest common ancestor and depth as dyad attributes from path
+void dyad::compute_path_characteristics(int generation_limit){ // set pathline, kinline, lowest common ancestor and depth as dyad attributes from path
     try{
         if(!dyad::paths.empty()){ // if paths to analyze exist
+            std::set<int> paths_to_remove;
             string output_pathlines = "";
             string output_kinlines = "";
             string output_commonancs = "";
@@ -403,19 +423,34 @@ void dyad::compute_path_characteristics(){ // set pathline, kinline, lowest comm
                         current_kinline = "unk";
                     }
                 }
-                if(i<(dyad::paths.size()-1)){ //add current attribute to the previous attributes of the dyad, delimited by /@/
-                    output_pathlines = output_pathlines + current_pathline + "/@/";
-                    output_depths = output_depths + current_depth + "/@/";
-                    output_kinlines = output_kinlines + current_kinline + "/@/";
-                    output_commonancs= output_commonancs + current_commonanc + "/@/";
+                if(generation_limit<0 || (stoi(str_split(current_depth,"/")[0]) < generation_limit && stoi(str_split(current_depth,"/")[1]) < generation_limit )){ // if required save only these path characteristics of paths within the given generation_limit (no generation limit == -1)
+                    if(i<(dyad::paths.size()-1)){ //add current attribute to the previous attributes of the dyad, delimited by /@/
+                        output_pathlines = output_pathlines + current_pathline + "/@/";
+                        output_depths = output_depths + current_depth + "/@/";
+                        output_kinlines = output_kinlines + current_kinline + "/@/";
+                        output_commonancs= output_commonancs + current_commonanc + "/@/";
+                    }else{
+                        output_pathlines = output_pathlines + current_pathline;
+                        output_depths = output_depths + current_depth;
+                        output_kinlines = output_kinlines + current_kinline;
+                        output_commonancs = output_commonancs + current_commonanc;
+                    }
                 }else{
-                    output_pathlines = output_pathlines + current_pathline;
-                    output_depths = output_depths + current_depth;
-                    output_kinlines = output_kinlines + current_kinline;
-                    output_commonancs = output_commonancs + current_commonanc;
+                    paths_to_remove.insert(i);
                 }
             }
             dyad::path_characteristics = {output_pathlines,output_kinlines,output_commonancs,output_depths};
+            if (!paths_to_remove.empty()) {
+                std::deque<std::deque<node*>> temp_paths;
+                for (int i = 0; i < dyad::paths.size(); i++) {
+                    if (paths_to_remove.find(i) == paths_to_remove.end()) {
+                        temp_paths.push_back(dyad::paths[i]);
+                    } else {
+                        dyad::set_r_value(dyad::get_r_value() - std::pow(0.5, (dyad::paths[i].size() - 1)));
+                    }
+                }
+                dyad::paths = temp_paths;
+            }
         }else{ // no paths at all
             dyad::path_characteristics = {"NA","NA","NA","NA"};
         }
@@ -451,15 +486,15 @@ std::tuple<int, int> dyad::get_dyad_idx_in_f_matrix(){
         return {dyad::indiv_1_idx,dyad::indiv_2_idx};
     }
 }
-string dyad::get_dyad_infos(){ // generate string representation of all dyad attributes (e.g. to write dyadfile)
+string dyad::get_dyad_infos(int generation_limit){ // generate string representation of all dyad attributes (e.g. to write dyadfile)
     try{
-        dyad::compute_path_characteristics(); // ensure all path characteristics are computed
+        dyad::compute_path_characteristics(generation_limit); // ensure all path characteristics are computed
         std::deque <string> * path_characteristics = dyad::get_path_characteristics_ptr();
         if(r_value>0){ // if dyad is related -> return general dyad information + all attributes
-            return get_indiv_1_name()+"\t"+get_indiv_2_name()+"\t"+get_dyad_name()+"\t"+to_string_with_precision(get_r_value(),15)+"\t"+print_paths()+"\t"+get_pathlines()+"\t"+get_kinlines()+"\t"+get_common_ancs()+"\t"+get_depths()+"\t"+get_kinlabel()+"\t"+get_full_half(dyad::paths,get_kinlabel(),get_common_ancs())+"\t"+to_string(get_min_dyadic_genealogical_depth())+"\n";
-        }else if (r_value==0){ // if dyad is not related -> only + kinlabel & minDGD
-            return get_indiv_1_name()+"\t"+get_indiv_2_name()+"\t"+get_dyad_name()+"\t0\tNA\tNA\tNA\tNA\tNA\t"+get_kinlabel()+"\tNA\t"+to_string(get_min_dyadic_genealogical_depth())+"\n";
-        }else{ // if no information is available whether dyad is related or not -> only + minDGD
+            return get_indiv_1_name()+"\t"+get_indiv_2_name()+"\t"+get_dyad_name()+"\t"+to_string_with_precision(get_r_value(),15)+"\t"+print_paths()+"\t"+get_pathlines(generation_limit)+"\t"+get_kinlines(generation_limit)+"\t"+get_common_ancs(generation_limit)+"\t"+get_depths(generation_limit)+"\t"+get_kinlabel(generation_limit)+"\t"+get_full_half(dyad::paths,get_kinlabel(generation_limit),get_common_ancs(generation_limit))+"\t"+to_string(get_min_dyadic_genealogical_depth())+"\n";
+        }else if (r_value==0){ // if dyad is not related -> only dyad info + kinlabel & minDGD
+            return get_indiv_1_name()+"\t"+get_indiv_2_name()+"\t"+get_dyad_name()+"\t0\tNA\tNA\tNA\tNA\tNA\t"+get_kinlabel(generation_limit)+"\tNA\t"+to_string(get_min_dyadic_genealogical_depth())+"\n";
+        }else{ // if no information is available whether dyad is related or not -> only dyad info + minDGD
             return get_indiv_1_name()+"\t"+get_indiv_2_name()+"\t"+get_dyad_name()+"\tNA\tNA\tNA\tNA\tNA\tNA\tNA\tNA\t"+to_string(get_min_dyadic_genealogical_depth())+"\n";
         }
     }catch(const std::exception &ex) {
