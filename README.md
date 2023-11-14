@@ -10,7 +10,7 @@ Since scientists working on wild populations often have to deal with incomplete 
  
 - download (and don't forget to unzip) the repository to your local filesystem
 - after downloading the source code, open the command line and navigate within the terminal into the folder _pedigree_programme/source/_
-  - you can check with `ls` if you are in the correct folder if there are multiple headerfiles (.h) and the respective source code files (.cpp) as well as _main.cpp_ and the makefile _makefile_pedigree_programme_
+  - you can use `ls` to check if you are in the correct folder and if all the necessary files were downloaded: multiple headerfiles (.h), the respective source code files (.cpp), _main.cpp_ and the makefile _makefile_pedigree_programme_
 - run in the command line `make -f makefile_pedigree_programme`
   - if you have trouble with make on windows:_'make' is not recognized as an internal or external command, operable programme or batch file._
     - either download [Cygwin](https://www.cygwin.com/install.html), use the setup exe to install _make_ and _gcc/g++_, move the programme folder to Cygwin and run the command in the Cygwin Terminal
@@ -24,12 +24,13 @@ Since scientists working on wild populations often have to deal with incomplete 
 <details>
 <summary>Command line arguments</summary>
 
-`-f <functionality>` [string]
-  - **options**:
-    - _relatedness_: calculates the dyadic relatedness (+ path characteristics) from a given pedigree
-    - _simulation_: simulates a pedigree
-    - _annealing_: starts a simulated annealing algorithm to fill the parental gaps within a pedigree based on realized relatedness values
-  - **default**: [empty] (the programme starts without task)
+The pedigree programme provides three different functionalities: "relatedness","simulation", and "annealing", that were chosen by the command line argument `-f <functionality>`.
+ - _relatedness_: calculates the dyadic relatedness (+ path characteristics) from a given (partial) pedigree
+ - _simulation_: simulates a random population and returns a complete pedigree
+ - _annealing_: starts a simulated annealing algorithm to fill the parental gaps within a partial pedigree based on realized relatedness values
+ - if no argument is given, the programme starts without task, gives a short warning and terminates
+
+For each mode, further required and optional arguments are listed below:
 
 <details><summary>
 functionality == relatedness</summary>
@@ -186,16 +187,18 @@ functionality == annealing</summary>
   - ID names have to be unique and have to be unambiguously assignable to pedigree IDs; every focal ID has to be listed in the pedigree separately; ID names like _UNK_, _NA_, _unknown_, _unkn_f_, and _unkn_m_ have to be avoided
   - pedigree_r: dyadic relatedness coefficient from the incomplete pedigree; no NA values possible
   - real_r: realized relatedness values of the dyad, obtained for instance from shared IBD segments; no NA values possible
-- [example](example/example_simulation_dyads.txt)
+- [example](example/simulated_annealing/example_simulation_dyads.txt)
 </details>
 
 ## Example
 <details>
 <summary>Relatedness calculation</summary>
+ 
 <p align="center">
   <img src="example/relatedness_calculation/mini_example_git.png" width="300">
 </p>
-
+ 
+To calculate the dyadic relatedness for some selected dyads of the above-plotted pedigree, two input files are required: the pedigree file itself (one individual per row) and the preselection of dyads. The files used for that example are listed in the subsection **Input files**, while the resulting output (relatedness coefficients and path characteristics for the selected dyads as well as the minimal inbreeding value and the number of completely known generations for each individual) can be viewed in the second section **Output files**. 
 <details>
 <summary>I. Input files</summary>
 
