@@ -19,13 +19,13 @@ Since scientists working on wild populations often have to deal with partial ped
     - or install [MinGW](https://sourceforge.net/projects/mingw/files/Installer/mingw-get-setup.exe/download), set a new environment variable to the bin folder of mingw, install make by `mingw-get install mingw32-make` or the MinGW Interface (started by `mingw-get`) and use the command `mingw32-make -f makefile_pedigree_programme` instead
   <!-- MinGW Setup Installation Tutorial Youtube by PascalLandau: https://www.youtube.com/watch?v=taCJhnBXG_w-->
 - now you can use the command `./pedigree_programme` to start the programme
-- for general information you can type `./pedigree_programme -h`to list all possible command line arguments, or `./pedigree_programme -v` to get the current version
+- for general information you can type `./pedigree_programme -h` to list all possible command line arguments, or `./pedigree_programme -v` to get the current version
 </details>
 
 <details>
 <summary>Command line arguments</summary>
 
-The pedigree programme provides three different functionalities: "relatedness","simulation", and "annealing", that were chosen by the command line argument `-f <functionality>`.
+The pedigree programme provides three different functionalities: "relatedness","simulation", and "annealing", that could be chosen by the command line argument `-f <functionality>`.
  - _relatedness_: calculates the dyadic relatedness (+ path characteristics) from a given (partial or complete) pedigree
  - _simulation_: simulates a random population and returns a complete pedigree
  - _annealing_: starts a simulated annealing algorithm to fill the parental gaps within a partial pedigree based on realized relatedness values
@@ -322,7 +322,7 @@ examplary simulated annealing based on the simulated pedigree above
 - [dyads](example/simulated_annealing/example_simulation_dyads.txt): combined list of relatedness coefficients for each dyad, (1) from incomplete/partial pedigree and (2) from complete pedigree with added recombination noise
 - simulated annealing started with `.\pedigree_programme -f annealing -p ..\example\simulated_annealing\example_simulation_incomplete.txt -d ..\example\simulated_annealing\example_simulation_dyads.txt -o ..\example\simulated_annealing\example_annealing_output -z ..\example\population_simulation\example_simulation.txt -x 0.999`
 - output files: [final pedigree solution](example/simulated_annealing/example_annealing_output_annealed.txt) after simulated annealing, [start solution pedigree](example/simulated_annealing/example_annealing_output_start_solution.txt) (randomly filled pedigree) and [visualization data](example/simulated_annealing/example_annealing_output_visualization.txt)
-- simulated annealing assigned 39/43 gaps (90.7%) correctly (time: 1 minute, iterations: 2665) and reduced so the relatedness discrepancy from 321 to 96 (-70%), see simulated annealing graph (plotted with visualization data). A minimization towards a difference of 0 is highly unlikely due to the existing recombination variance in the (simulated) realized relatedness values from whole genome sequencing in comparison to the statistical average relatedness values provided by pedigree data.
+- simulated annealing assigned 39/43 gaps (90.7%) correctly (time: 1 minute, iterations: 2665) and reduced so the relatedness discrepancy from 321 to 96 (-70%), see simulated annealing graph (plotted visualization data). A minimization towards a difference of 0 is highly unlikely due to the existing recombination variance in the (simulated) realized relatedness values from whole genome sequencing in comparison to the statistical average relatedness values provided by pedigree data.
 <p align="center">
   <img src="example/simulated_annealing/R_difference_decrease.jpeg" width="350">
 </p>
