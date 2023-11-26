@@ -146,16 +146,19 @@ functionality == annealing</summary>
 ## Implementation
 
 > <sub><sup>The content in the following section are adapted excerpts from the Master's thesis by Hendrikje Westphal, submitted in December 2023 at Leipzig University</sup></sub> 
+
 <details>
 <summary>Relatedness Coefficient</summary>
-
+ 
 #### Relatedness coefficient calculation
 
 To calculate the dyadic relatedness coefficient, the (partial) pedigree G is conceived as a directed acyclic graph, consisting of two distinct classes of vertices, $V_1$ (males) and $V_2$ (females) whereas each vertex represents an individual. Edges within the graph refer to one-directional direct kinship bonds between parent and offspring, which implies that for each (heterogamous) node at least two edges exist (to the mother and to the father), or more in case of own offspring. But while in reality, pedigrees often consists of missing parents, two imaginary nodes $\rho_1\ \epsilon\ V_1$ and $\rho_2\ \epsilon\ V_2$ are added, serving as a compensatory substitute for unknown mothers or sires, see example graph below:
 
 <p align="center">
-  <img src="example/relatedness_calculation/example_relatedness_calculation.png" width="700">
+  <img src="example/relatedness_calculation/example_relatedness_calculation.jpg" width="700">
 </p>
+
+![Example relatedness calculation](example/relatedness_calculation/example_relatedness_calculation.jpg)
 
 Generally, the relatedness coefficient of an individual $x\ \epsilon\ V$ to itself is stated as $f\left(x,x\right)=1$ while the relatedness of two different focals $f\left(x,y\right)$ can be expressed by the following recursive formula
 $$f\left(x,y\right)=\ \frac{1}{4}\left[f\left(x_1,y_1\right)+f\left(x_1,y_2\right)+f\left(x_2,y_1\right)+f(x_2,y_2)\right]$$ ($x_1,\ x_2$ as parents of $x$; $y_1,\ y_2$ as parents of $y$ while $x_1,\ y_1\ \epsilon\ V_1$ and $x_2,\ y_2\ \epsilon\ V_2$).
@@ -397,7 +400,7 @@ We want to thank and express our deep gratitude to all people who supported and 
 
 Please use the BibTex format, provided by Github or cite this programme as
 
-**Westphal et al. (2023). Pedigree programme (Version 1.0.0) [Computer software].** _https://github.com/Hendrikjen/pedigree_programme_
+**Westphal, H., Freudiger, A., Gatter, T., Stadler, P., & Widdig, A. (2023). Pedigree programme (Version 1.0.0) [Computer software].** _https://github.com/Hendrikjen/pedigree_programme_
 
 Contact email: hendrikje.westphal@gmx.de
 
