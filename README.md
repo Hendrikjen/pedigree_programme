@@ -1,4 +1,4 @@
- # pedigree programme
+# pedigree programme
 
 The programme, described in the following, is a pedigree analysis tool, which was developed and implemented as part of a bioinformatic's master thesis in 2023 at Leipzig University. It is a C++ written console application, that was designed to calculate dyadic relatedness coefficients from a given pedigree without being limited by the number of considered generations, the number of individuals, or the incompleteness of the pedigree itself. Additionally, the programme provides some further information about the respective relatedness paths between the focal individuals, such as the name and sex of ancestors along the path, the most recent common ancestors (LCA = lowest common ancestor), the kin class (e.g. siblings or cousins), or the minimal detectable inbreeding value for each individual. The functionality and accuracy were adequately tested with multiple simulated populations as well as with an existing multi-generational pedigree established for the free-ranging population of rhesus macaques (Macaca mulatta) on the island of Cayo Santiago (Puerto Rico, USA) that covers a time span of over 60 years and consists of a total of 12 049 individuals [^1]. Contrary to other pedigree analyses, which are often limited in the number of considered generations (like [^1]), the graph-theoretical approach enables a generational unrestricted calculation of the dyadic relatedness coefficients.
 
@@ -212,7 +212,7 @@ Pedigree file in this context refers to a file, containing a table with informat
 - please refer to the column **missing_value** of the following table to ascertain the correct format for NAs for each attribute
 
 |column|data type|missing value|explanation|comment|
-|-|-|-|-|
+|-|-|-|-|-|
 |ID |string| cannot be supported; no NA values possible|unique name for the individual| ID names have to be unique and have to be unambiguously assignable to parent IDs; every parent ID from mom_ID or sire_ID has to be listed in the pedigree file separately; ID names like _UNK_, _NA_, _unknown_, _unkn_f_, and _unkn_m_ have to be avoided
 |sex |char| u| sex of the individual| usage of the following options only _f_ = female, _m_ = male, or _u_ = unknown sex
 |birthseason |int|0|year or respective birth season the individual is born in|
