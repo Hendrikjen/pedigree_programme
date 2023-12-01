@@ -36,15 +36,15 @@ void display_help(){ // output of -h (command line argument help)
     cout << "-g <gestation_length> [int][o|o|o]\n   options: gestation length in days\n   default: 200"<<endl;
     cout << "-h (without argument): display help"<<endl;
     cout << "-i <init_temp> [double][-|-|o]\n   options: start temperature \n   default: [empty] (automatically calculated)"<<endl;
-    cout << "-j <twins> [bool][o|o|o]\n   options \n     - true: twins are possible \n     - false: twins are not possible or that rare that potential mom \n       candidates can be excluded if the have already an offspring in the \n       respective birth cohort"<<endl;
-    cout << "-k <visualization> [bool][-|-|o]\n   options \n     - true: keep track of simulated annealing steps (the respective \n       relatedness variance and if they are rejected) \n     - false: prior simulated annealing steps are not recorded/returned"<<endl;
+    cout << "-j <twins> [bool][o|o|o]\n   options \n     - T (true): twins are possible \n     - F (false): twins are not possible or that rare that potential mom \n       candidates can be excluded if the have already an offspring in the \n       respective birth cohort"<<endl;
+    cout << "-k <visualization> [bool][-|-|o]\n   options \n     - T (true): keep track of simulated annealing steps (the respective \n       relatedness variance and if they are rejected) \n     - F (false): prior simulated annealing steps are not recorded/returned"<<endl;
     cout << "-l <generation_limit> [int][o|-|-]\n   options: restricts the distance to potential lowest common ancestors, \n            e.g. if generationlimit == 3, only paths up to the grandparent \n            generation will be returned, great-grand-parents will be considered as \n            unrelated\n   default: [empty] (no limitation; all ancestors of a focal will be \n            considered as potential lowest common ancestor)"<<endl;
     cout << "-m <maturation_age_m> [int][o|o|o]\n   options: maturation age of males in days\n   default: 1250"<<endl;
     cout << "-n <start_individual> [int][-|r|-]: number of individuals at the start of the \n   simulation"<<endl;
     cout << "-o <output> [string][o|o|o]\n   options: custom output name (prefix) e.g. if output == programmeoutput, the \n            resulting output files will be named 'programmeoutputdyadlist.txt' \n            and 'programmeoutputinfo.txt'\n   default: [empty] (the input file name will be used as prefix)"<<endl;
     cout << "-p <input_pedigree> [string][r|-|r]: path to pedigree file, e.g. pedigree.txt"<<endl;
     cout << "-q <death_rate> [double][-|o|-]\n   options: specifies the annual increment in the number of deaths each year \n            during the population simulation\n   default: 3.0"<<endl;
-    cout << "-r <reduce_node_space> [bool][o|-|-]\n   options: \n     - true: before calculating the dyadic relatedness, the number of \n       individuals will be reduced which means that only descendants of \n       the focal's common ancestors will be considered in the analysis\n       (it effectively reduces the search space without affecting the \n       result, but might be only beneficial in almost completely reconstructed \n       pedigrees with a long history due to the extra computational cost)\n     - false: no prior narrowing of the search space\n   default: false"<<endl;
+    cout << "-r <reduce_node_space> [bool][o|-|-]\n   options: \n     - T (true): before calculating the dyadic relatedness, the number of \n       individuals will be reduced which means that only descendants of \n       the focal's common ancestors will be considered in the analysis\n       (it effectively reduces the search space without affecting the \n       result, but might be only beneficial in almost completely reconstructed \n       pedigrees with a long history due to the extra computational cost)\n     - F (false): no prior narrowing of the search space\n   default: false"<<endl;
     cout << "-s <simulation_duration> [int][-|r|-]: number of years to restrict the duration \n   of the simulation"<<endl;
     cout << "-t <stop_temp> [double][-|-|o]\n   options: stop temperature, if current temperature falls below stop temperature, \n            the algorithm terminates\n   default: 1.0"<<endl;
     cout << "-v (without argument): version information"<<endl;
@@ -113,12 +113,12 @@ int main(int argc, char *argv[]) {
                 maturation_age_f = stoi(optarg); 
                 break;
             case 'j':
-                if(optarg == "true"){
+                if(optarg == "T"){
                     twins = true;
-                }else if(optarg == "false"){
+                }else if(optarg == "F"){
                     twins = false;
                 }else{
-                    cerr << "Invalid twins argument. Please choose 'true' or 'false' (default = false)"<<endl;
+                    cerr << "Invalid twins argument. Please choose 'T' (true) or 'F' (false); default = false"<<endl;
                 }
                 break;
             case 'l':
@@ -155,21 +155,21 @@ int main(int argc, char *argv[]) {
                 temp_decay = stod(optarg);
                 break;
             case 'k':
-                if(optarg == "true"){
+                if(optarg == "T"){
                     visualization = true;
-                }else if(optarg == "false"){
+                }else if(optarg == "F"){
                     visualization = false;
                 }else{
-                    cerr << "Invalid visualization argument. Please choose 'true' or 'false' (default = true)"<<endl;
+                    cerr << "Invalid visualization argument. Please choose 'T' (true) or 'F' (false); default = true"<<endl;
                 }
                 break;
             case 'r':
-                if(optarg == "true"){
+                if(optarg == "T"){
                     reduce_node_space = true;
-                }else if(optarg == "false"){
+                }else if(optarg == "F"){
                     reduce_node_space = false;
                 }else{
-                    cerr << "Invalid reduce_node_space argument. Please choose 'true' or 'false' (default = false)"<<endl;
+                    cerr << "Invalid reduce_node_space argument. Please choose 'T' (true) or 'F' (false); default = false"<<endl;
                 }
                 break;
             case 'z':
