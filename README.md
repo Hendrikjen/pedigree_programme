@@ -59,8 +59,8 @@ functionality == relatedness</summary>
   - **default**: [empty] (the input file name will be used as a prefix)
 - `-r <reduce_node_space>` [bool]
   - **options**:
-    - _TRUE_: before calculating the dyadic relatedness, the number of individuals will be reduced which means that only descendants of the focal's common ancestors will be considered in the analysis (it effectively reduces the search space without affecting the result, but might be only beneficial in almost completely known pedigrees with a long history due to the extra computational cost)
-    - _FALSE_: no prior narrowing of the search space
+    - _T_:  [true] before calculating the dyadic relatedness, the number of individuals will be reduced which means that only descendants of the focal's common ancestors will be considered in the analysis (it effectively reduces the search space without affecting the result, but might be only beneficial in almost completely known pedigrees with a long history due to the extra computational cost)
+    - _F_: [false] no prior narrowing of the search space
   - **default**: false
 
 #### Example
@@ -107,8 +107,8 @@ functionality == annealing</summary>
   - **default**: [empty] (automatically calculated by $\text{start temperature = init factor (= highest mean relatedness of an individual}) \cdot n_{nodes} \cdot 1.5$
 - `-k <visualization>` [bool]
   - **options**:
-    - _TRUE_: keep track of simulated annealing steps (the respective relatedness variance and if they are rejected)
-    - _FALSE_: prior simulated annealing steps are not recorded/returned
+    - _T_: [true] keep track of simulated annealing steps (the respective relatedness variance and if they are rejected)
+    - _F_: [false] prior simulated annealing steps are not recorded/returned
   - **default**: true
 - `-t <stop_temp>` [double]
   - **options**: stop temperature, if the current temperature falls below stop temperature, the algorithm terminates
@@ -130,8 +130,8 @@ functionality == annealing</summary>
   - **default**: 200
 - `-j <twins>` [bool]
   - **options**:
-    - _TRUE_: twins are possible
-    - _FALSE_: twins are not possible or rare to the point that potential mom candidates can be excluded if they have already an offspring in the respective birth cohort
+    - _T_: [true] twins are possible
+    - _F_: [false] twins are not possible or rare to the point that potential mom candidates can be excluded if they have already an offspring in the respective birth cohort
   - **default**: false
 - `-m <maturation_age_m>` [int]
   - **options**: maturation age of males in days
