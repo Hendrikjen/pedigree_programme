@@ -166,12 +166,15 @@ void fill_f_matrix(std::deque<std::deque<double>> *f_matrix,int ncol, int nrow,s
         }else if(multithreading == true && dyads_end == 0){
             throw runtime_error("Unable to fill the 'f_matrix' with multiple threads (dyads_end == 0)");
         }
+        int last_printed_progress = 0;
         for(int i = dyads_start;i<dyads_end;i++){ // Iterate over dyads of interest
             int progress = static_cast<int>((static_cast<double>(i-dyads_start)/(dyads_end-dyads_start))*100);
-            if (progress % 10 == 0) {
+            if (progress % 10 == 0 && progress >  last_printed_progress) {
                 string printer = "["+ to_string(thread)+"] "+to_string(progress)+"% \t("+ to_string(i) +" of "+to_string(dyads_start)+".."+to_string(dyads_end)+")";
                 cout <<printer<<endl;
+                last_printed_progress = progress;
             }
+
             auto [x,y] = all_dyads_ptr->at(i).get_dyad_idx_in_f_matrix();// get the dyadic matrix indices [x][y] in the relatedness matrix f
             if(all_dyads_ptr->at(i).get_indiv_1_name()!=all_nodes_ptr->at(0).get_name() // check that the dyad consists of non-imaginary nodes and that x, y are valid
                     &&all_dyads_ptr->at(i).get_indiv_2_name()!=all_nodes_ptr->at(0).get_name()
@@ -228,11 +231,10 @@ string all_nodes_info_file(std::deque <node> *all_nodes_ptr,std::map<string,int>
         out.open(filename+".txt"); 
         for(int i = 0;i<all_nodes_ptr->size();i++){ // iterate through all nodes
             if(i==0){
-                out << "ID\tsex\tBS\tmom\tsire\tDOB\tDOD\tpot_sire\tpot_mom\tfull_generations\tmin_f"<<endl; // header
+                out << "ID\tfull_generations\tmin_f"<<endl; // header
             }
             if(all_nodes_ptr->at(i).get_name()!="unkn_f"&&all_nodes_ptr->at(i).get_name()!="unkn_m"){ // no imaginary nodes within pedigree file
-                out << all_nodes_ptr->at(i).get_name()<<"\t"<<all_nodes_ptr->at(i).get_sex()<<"\t"<<all_nodes_ptr->at(i).get_birthseason()<<"\t"<<all_nodes_ptr->at(i).get_mom()<<"\t"<<all_nodes_ptr->at(i).get_sire()<<"\t"<<all_nodes_ptr->at(i).get_DOB().get_date()<<"\t"<<all_nodes_ptr->at(i).get_DOD().get_date()<<"\t"; // reprint previsou information from input pedigree
-                out << all_nodes_ptr->at(i).get_pot_sires()<<"\t"<<all_nodes_ptr->at(i).get_pot_moms()<<"\t"<<all_nodes_ptr->at(i).get_full_generations()<<"\t"<<to_string_with_precision(all_nodes_ptr->at(i).get_min_f(),15)<<endl; // but print also some extra information
+                out << all_nodes_ptr->at(i).get_name()<<"\t"<<all_nodes_ptr->at(i).get_full_generations()<<"\t"<<to_string_with_precision(all_nodes_ptr->at(i).get_min_f(),15)<<endl; // make file with additional (min_f & generation_depth) per individual
             }
         }
         out.close();
@@ -405,7 +407,6 @@ void relatedness_calculation(string file,string output_file,string input_dyadlis
         for(int i = 0;i<all_dyads.size();i++){ // link index from all_nodes & relatedness matrix to dyad
             all_dyads[i].set_idx(&all_nodes);
         }
-        
         if(n_cores > 1){ // prepare multiprocessing
             std::vector<std::thread> threads = {};
             for(int i = 0;i<n_cores;i++){ 
