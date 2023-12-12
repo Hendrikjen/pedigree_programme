@@ -1,6 +1,6 @@
-# pedigree programme
+# TRACE - _Tool for pedigree Relatedness Analysis and Coefficient Estimation_
 
-The programme, described in the following, is a pedigree analysis tool, which was developed and implemented as part of a bioinformatic's master thesis in 2023 at Leipzig University. It is a C++ written console application, that was designed to calculate dyadic relatedness coefficients from a given pedigree without being limited by the number of considered generations, the number of individuals, or the incompleteness of the pedigree itself. Additionally, the programme provides some further information about the respective relatedness paths between the focal individuals, such as the name and sex of ancestors along the path, the most recent common ancestors (LCA = lowest common ancestor), the kin class (e.g. siblings or cousins), or the minimal detectable inbreeding value for each individual. The functionality and accuracy were adequately tested with multiple simulated populations as well as with an existing multi-generational pedigree established for the free-ranging population of rhesus macaques (Macaca mulatta) on the island of Cayo Santiago (Puerto Rico, USA) that covers a time span of over 60 years and consists of a total of 12 049 individuals [^1]. Contrary to other pedigree analyses, which are often limited in the number of considered generations (like [^1]), the graph-theoretical approach enables a generational unrestricted calculation of the dyadic relatedness coefficients.
+The software TRACE is a pedigree analysis tool, which was developed and implemented as part of a bioinformatic's master thesis in 2023 at Leipzig University. It is a C++ written console application, that was designed to calculate dyadic relatedness coefficients from a given pedigree without being limited by the number of considered generations, the number of individuals, or the incompleteness of the pedigree itself. However, it might not be suitable for highly inbred populations since it does not include inbreeding coefficients of common ancestors (see more information in the section _Implementation/Relatedness coefficient_). Additionally, TRACE provides some further information about the respective relatedness paths between the focal individuals, such as the name and sex of ancestors along the path, the most recent common ancestors (LCA = lowest common ancestor), the kin class (e.g. siblings or cousins), or the minimal detectable inbreeding value for each individual. The functionality and accuracy were adequately tested with multiple simulated populations as well as with an existing multi-generational pedigree established for the free-ranging population of rhesus macaques (Macaca mulatta) on the island of Cayo Santiago (Puerto Rico, USA) that covers a time span of over 60 years and consists of a total of 12 049 individuals [^1]. Contrary to other pedigree analyses, which are often limited in the number of considered generations (like [^1]), the graph-theoretical approach enables a generational unrestricted calculation of the dyadic relatedness coefficients.
 
 Since scientists working on wild populations often have to deal with partial pedigrees (mainly due to unknown sires), the second part of the programme focuses on the implementation of an adapted simulated annealing algorithm to find the best solution for a fully-reconstructed pedigree based on "true" relatedness values. True relatedness means in this context dyadic relatedness values, that provide more information about the individuals with incomplete ancestry, than can be obtained from the partial pedigree, like relatedness values calculated from a fully-reconstructed pedigree or - closer to a realistic application - realised relatedness values. Realised relatedness (the proportion of DNA two individuals actually share instead of an average) can be estimated based on the length and number of IBD segments. Identified through dense and genome-wide sets of SNPs (single nucleotide polymorphisms) in whole genome sequencing data, short identity-by-descent (IBD) segments indicate rather distant kin due to more meioses in between, that are responsible for the length reduction [^2] [^3]. Eventually, the algorithm aims to provide a pedigree without gaps for which the difference between the given realised relatedness values and the simultaneously calculated pedigree-derived relatedness coefficients is minimal over all dyads (see more information in the section _Implementation/Simulated annealing_). While patterns of relatedness in group-living animals with promiscuous mating can be really complex, assessing dyadic relatedness from sequencing data is providing the most accurate way to do so. However, at the behavioural level it will be important to still consider kin classes (e.g. maternal half-siblings, paternal cousins etc.) instead of using a global measure of IBD.
 
@@ -18,18 +18,18 @@ Since scientists working on wild populations often have to deal with partial ped
     <!-- Cygwin Setup Installation Tutorial Youtube by C Plus+: https://www.youtube.com/watch?v=2ypfJZ6YuVo -->
     - or install [MinGW](https://sourceforge.net/projects/mingw/files/Installer/mingw-get-setup.exe/download), set a new environment variable to the bin folder of mingw, install make by `mingw-get install mingw32-make` or the MinGW Interface (started by `mingw-get`) and use the command `mingw32-make -f makefile_pedigree_programme` instead
   <!-- MinGW Setup Installation Tutorial Youtube by PascalLandau: https://www.youtube.com/watch?v=taCJhnBXG_w-->
-- now you can use the command `./pedigree_programme` to start the programme
+- now you can use the command `./pedigree_programme` to start TRACE
 - for general information you can type `./pedigree_programme -h` to list all possible command line arguments, or `./pedigree_programme -v` to get the current version
 </details>
 
 <details>
 <summary>Command line arguments</summary>
 
-The pedigree programme provides three different functionalities: "relatedness", "simulation", and "annealing", which could be chosen by the command line argument `-f <functionality>`.
+TRACE provides three different functionalities: "relatedness", "simulation", and "annealing", which could be chosen by the command line argument `-f <functionality>`.
  - _relatedness_: calculates the dyadic relatedness (+ path characteristics) from a given (partial or complete) pedigree
  - _simulation_: simulates a random population and returns a complete pedigree
  - _annealing_: starts a simulated annealing algorithm to fill the parental gaps within a partial pedigree using dyadic values of realised relatedness (IBD)
- - if no argument is given, the programme starts without a task, gives a short warning, and terminates
+ - if no argument is given, TRACE starts without a task, gives a short warning, and terminates
 
 For each mode, further required and optional arguments are listed below:
 
@@ -166,7 +166,15 @@ $$f\left(x,x_i\right)=\ \frac{1}{2}\left[f\left(x_1,x_i\right)+f\left(x_2,x_i\ri
 $$f\left(x,x_1\right)=\ \frac{1}{2}\left[1+f\left(x_1,x_2\right)\right]$$
 At last, in case of imaginary nodes, $\rho_1$ and $\rho_2$ are assumed as unrelated to each other or any other individual $x\ \epsilon\ V:$
 $$f\left(\rho_1,\rho_2\right)=f\left(x,\rho_1\right)=f\left(x,\rho_2\right)=0$$
-Based on these recursive functions, the programme computes the relatedness between a dyad by bidirectionally traversing through the graph until it either identifies their lowest common ancestor or terminates due to a trivial solution. In other words, the algorithm starts simultaneously with both individuals and applies stepwise the appropriate function from above, that keeps calling itself unless the relatedness value of two ancestors is already known (for instance, if ancestor 1 == ancestor 2 (then r = 1), or if the one ancestor is unknown (then r = 0)).
+Based on these recursive functions, TRACE computes the relatedness between a dyad by bidirectionally traversing through the graph until it either identifies their lowest common ancestor or terminates due to a trivial solution. In other words, the algorithm starts simultaneously with both individuals and applies stepwise the appropriate function from above, that keeps calling itself unless the relatedness value of two ancestors is already known (for instance, if ancestor 1 == ancestor 2 (then r = 1), or if the one ancestor is unknown (then r = 0)).
+
+Please note, that based on the formulas above, TRACE may provide slightly underestimated relatedness coefficients in the case of inbred common ancestors (for instance, as shown in Figure A). That is because the algorithm stops as soon as the lowest common ancestor in the respective path is found. Inbreeding due to multiple relatedness paths (Figure B), however, is not affected.
+
+<p align="center">
+  <img src="https://github.com/Hendrikjen/pedigree_programme/blob/main/example/relatedness_calculation/inbred_peds.png" width="500">
+</p>
+
+For the individuals _F_ and _G_ in Figure A, TRACE would provide an r of 0.25 (whereby the inbreeding coefficient of lowest common ancestor _E_ remains unconsidered), while the relatedness coefficient in Figure B is 0.265625. To manually estimate the reliability, TRACE additionally offers the inbreeding coefficient for each individual, estimated by the half of the parental relatedness coefficient. That means, that the inbreeding coefficient of _E_ in Figure A would be 0.25.
 </details>
 
 <details>
@@ -174,7 +182,7 @@ Based on these recursive functions, the programme computes the relatedness betwe
 
 #### Adapted Simulated Annealing Algorithm 
 
-Within the programme a simulated annealing algorithm is implemented to fill possibly existing gaps within a given pedigree. Therefore, it uses the discrepancy between user-provided realised relatedness values (e.g. obtained from whole genome sequencing) and the calculated pedigree-derived relatedness values as cost function. In trying to minimize the cost/discrepancy by simulated annealing, the aim is to find the one pedigree solution which explains best the variance.
+Within the programme, a simulated annealing algorithm is implemented to fill possibly existing gaps within a given pedigree. Therefore, it uses the discrepancy between user-provided realised relatedness values (e.g. obtained from whole genome sequencing) and the calculated pedigree-derived relatedness values as cost function. In trying to minimize the cost/discrepancy by simulated annealing, the aim is to find the one pedigree solution which explains best the variance.
 $$F =\Sigma\ |f(x,y) - g(x,y) | \to min$$ (total discrepancy/cost function $F$ with $f(x,y)$ as the pedigree-based dyadic relatedness and $g(x,y)$ as the dyadic realised relatedness)
 
 This is highly relevant, for instance for identifying the ID of a sire, that was originally unknown, based on whole genome sequencing data of his descendants, as illustrated in the following example. Assume a DNA sample of a male is missing, but he sired two offspring that are otherwise unrelated. Hence, the realised relatedness of these paternal half-siblings is something around 0.25, while the pedigree-derived relatedness states them as nonkin with $r=0$ because their father could not be identified within the pedigree. The simulated annealing approach perceives this discrepancy of both relatedness values and tries different pedigree reconstructions to minimize it. Therefore, it starts with a pedigree with randomly reconstructed gaps and exchanges stepwise the potential parent candidates. Optimally, that would result in the end in filling both paternal gaps of the half-siblings with the same father so that the pedigree-derived relatedness value ($r=0.25$) is as close as possible to the realised relatedness value. However, to discriminate between different individuals, that could both be the sire of both offspring, more relatedness information of other dyads needs to be included. Therefore, the total discrepancy of realised vs. pedigree-derived relatedness values of all dyads is evaluated in each simulated annealing iteration. For instance, close relatives of an individual who is not related to the half-siblings can be excluded as potential sires; or if a third half-sibling exists, the common parent pool will be further reduced (e.g. due to its age). Hence, the more dyads with realised relatedness values are passed to the algorithm, the higher the probability of getting a reconstructed pedigree with correctly assigned parent candidates.
@@ -203,7 +211,7 @@ To fit our specific problem, the general simulated annealing algorithm is adapte
 ## Input requirements
 <details>
 <summary>Pedigree files</summary>
-Pedigree file in this context refers to a file, containing a table with information for each individual in the population per row. Since the programme is able to handle gaps (missing parental data), both a complete or partial pedigree can be passed as an argument to calculate relatedness coefficients.
+Pedigree file in this context refers to a file, containing a table with information for each individual in the population per row. Since TRACE is able to handle gaps (missing parental data), both a complete or partial pedigree can be passed as an argument to calculate relatedness coefficients.
 
  - Input file format: .txt (tab-separated)
 - no header
@@ -397,7 +405,7 @@ We would like to thank the Caribbean Primate Research Center (CPRC), especially 
 
 Please use the BibTex format, provided by GitHub or cite this programme as
 
-**Westphal, H., Freudiger, A., Gatter, T., Stadler, P., & Widdig, A. (2023). Pedigree programme (Version 1.0.0) [Computer software].** _https://github.com/Hendrikjen/pedigree_programme_
+**Westphal, H., Freudiger, A., Gatter, T., Stadler, P., & Widdig, A.  (2023). TRACE - Tool for pedigree Relatedness Analysis and Coefficient Estimation. (Version 1.0.0) [Computer software].** _https://github.com/Hendrikjen/pedigree_programme_
 
 Contact email: hendrikje.westphal@gmx.de
 
