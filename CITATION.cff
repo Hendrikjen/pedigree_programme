@@ -11,7 +11,7 @@ authors:
   given-names: "Peter"
 - family-names: "Widdig"
   given-names: "Anja"
-title: "Pedigree programme"
+title: "TRACE - Tool for pedigree Relatedness Analysis and Coefficient Estimation."
 version: 1.0.0
 date-released: 2023-10-17
 url: "https://github.com/Hendrikjen/pedigree_programme"
