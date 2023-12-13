@@ -405,7 +405,7 @@ We would like to thank the Caribbean Primate Research Center (CPRC), especially 
 
 Please use the BibTex format, provided by GitHub or cite this programme as
 
-**Westphal, H., Freudiger, A., Gatter, T., Stadler, P., & Widdig, A.  (2023). TRACE - Tool for pedigree Relatedness Analysis and Coefficient Estimation. (Version 1.0.0) [Computer software].** _https://github.com/Hendrikjen/pedigree_programme_
+**Westphal, H., Freudiger, A., Gatter, T., Stadler, P., & Widdig, A.  (2023). TRACE - Tool for pedigree Relatedness Analysis and Coefficient Estimation. (Version 0.1.0) [Computer software].** _https://github.com/Hendrikjen/pedigree_programme_
 
 Contact email: hendrikje.westphal@gmx.de
 
